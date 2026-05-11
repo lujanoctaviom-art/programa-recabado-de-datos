@@ -96,9 +96,11 @@
                     <option value="Taxi">Uso: Taxi</option>
                     <option value="Remis">Uso: Remis</option>
                     <option value="App">Uso: Chofer de Aplicación</option>
+                    <option value="Flota">Uso: Flota Empresarial</option>
+                    <option value="Transporte">Uso: Empresa de Transporte</option>
                 </select>
                 <div id="divOblea" class="d-none mb-2 border p-2 rounded bg-light">
-                    <input type="text" id="vOblea" class="form-control" placeholder="N° Oblea o Aplicación (Uber, etc)">
+                    <input type="text" id="vOblea" class="form-control" placeholder="Nombre Empresa / N° Interno / Oblea">
                 </div>
                 <button type="button" class="btn btn-primary w-100 mt-2" onclick="guardarVehiculo()">Guardar Vehículo</button>
             </div>
@@ -185,12 +187,8 @@
             uso: document.getElementById('vUso').value, 
             oblea: document.getElementById('vOblea').value 
         };
-        vehiculos.push(v); 
-        modVehiculo.hide(); 
-        renderVehiculos();
-        // Reset campos
-        document.getElementById('vMarca').value = ''; document.getElementById('vPatente').value = ''; 
-        document.getElementById('vSeguro').value = ''; document.getElementById('vOblea').value = '';
+        vehiculos.push(v); modVehiculo.hide(); renderVehiculos();
+        document.getElementById('vMarca').value = ''; document.getElementById('vPatente').value = ''; document.getElementById('vSeguro').value = ''; document.getElementById('vOblea').value = '';
     }
     
     function renderVehiculos() {
@@ -247,9 +245,11 @@
             let labelUso = v.uso;
             if(v.uso === 'Taxi' || v.uso === 'Remis') emoji = '🚕';
             if(v.uso === 'App') { emoji = '📱'; labelUso = 'Chofer de Aplicación'; }
+            if(v.uso === 'Flota') { emoji = '🏢'; labelUso = 'Flota Empresarial'; }
+            if(v.uso === 'Transporte') { emoji = '🚛'; labelUso = 'Empresa de Transporte'; }
 
             m += `\n${emoji} *VEHÍCULO:* ${v.marca} | *Pat:* ${v.patente}\n• *Seguro:* ${v.seguro || 'No especificado'}\n`;
-            if(v.uso !== 'Particular') m += `• Uso: ${labelUso} (Oblea/App: ${v.oblea})\n`;
+            if(v.uso !== 'Particular') m += `• Uso: ${labelUso} (${v.oblea})\n`;
             
             personas.filter(p => p.vinc === v.id).forEach(p => {
                 m += `  👤 *${p.rol}:* ${p.nombre} (DNI: ${p.dni})\n`;
