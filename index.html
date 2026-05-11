@@ -23,7 +23,7 @@
 
 <div id="avisoNavegador">
     ⚠️ ABRIR EN SAFARI O CHROME <br> 
-    No uses el navegador de WhatsApp para poder enviar los datos.
+    Para enviar los datos, no uses el navegador interno de WhatsApp.
 </div>
 
 <div class="container my-3">
@@ -50,21 +50,17 @@
 
             <!-- SECCIÓN COLABORADORES -->
             <div class="section-title">4. Servicios Colaboradores</div>
-            <div class="row g-2 mb-2 text-center small fw-bold text-muted">
-                <div class="col-6">Móvil / Unidad</div>
-                <div class="col-6">Encargado / Cargo</div>
+            <div class="row g-2 mb-2">
+                <div class="col-6"><input type="text" id="polMovil" class="form-control form-control-sm" placeholder="Pol. Móvil"></div>
+                <div class="col-6"><input type="text" id="polCargo" class="form-control form-control-sm" placeholder="Encargado"></div>
             </div>
             <div class="row g-2 mb-2">
-                <div class="col-6"><input type="text" id="polMovil" class="form-control form-control-sm" placeholder="Policía"></div>
-                <div class="col-6"><input type="text" id="polCargo" class="form-control form-control-sm"></div>
-            </div>
-            <div class="row g-2 mb-2">
-                <div class="col-6"><input type="text" id="glpMovil" class="form-control form-control-sm" placeholder="GLP"></div>
-                <div class="col-6"><input type="text" id="glpCargo" class="form-control form-control-sm"></div>
+                <div class="col-6"><input type="text" id="glpMovil" class="form-control form-control-sm" placeholder="GLP Móvil"></div>
+                <div class="col-6"><input type="text" id="glpCargo" class="form-control form-control-sm" placeholder="Encargado"></div>
             </div>
             <div class="row g-2 mb-3">
-                <div class="col-6"><input type="text" id="ambMovil" class="form-control form-control-sm" placeholder="Ambulancia"></div>
-                <div class="col-6"><input type="text" id="ambCargo" class="form-control form-control-sm"></div>
+                <div class="col-6"><input type="text" id="ambMovil" class="form-control form-control-sm" placeholder="Amb. Móvil"></div>
+                <div class="col-6"><input type="text" id="ambCargo" class="form-control form-control-sm" placeholder="Encargado"></div>
             </div>
             <textarea id="otrosColab" class="form-control form-control-sm mb-4" rows="1" placeholder="Otros (EPEC, Tránsito, etc.)"></textarea>
 
@@ -90,15 +86,16 @@
                 <h6 class="fw-bold mb-3">Datos del Vehículo</h6>
                 <input type="text" id="vMarca" class="form-control mb-2" placeholder="Marca/Modelo">
                 <input type="text" id="vPatente" class="form-control mb-2" placeholder="Patente">
+                <input type="text" id="vSeguro" class="form-control mb-2" placeholder="Compañía de Seguro">
                 <select id="vUso" class="form-select mb-2" onchange="document.getElementById('divOblea').classList.toggle('d-none', this.value === 'Particular')">
-                    <option value="Particular">Particular</option>
-                    <option value="Taxi">Taxi</option>
-                    <option value="Remis">Remis</option>
+                    <option value="Particular">Uso: Particular</option>
+                    <option value="Taxi">Uso: Taxi</option>
+                    <option value="Remis">Uso: Remis</option>
                 </select>
                 <div id="divOblea" class="d-none mb-2 border p-2 rounded bg-light">
-                    <input type="text" id="vOblea" class="form-control" placeholder="N° de Oblea">
+                    <input type="text" id="vOblea" class="form-control" placeholder="N° de Oblea Municipal">
                 </div>
-                <button type="button" class="btn btn-primary w-100" onclick="guardarVehiculo()">Guardar Vehículo</button>
+                <button type="button" class="btn btn-primary w-100 mt-2" onclick="guardarVehiculo()">Guardar Vehículo</button>
             </div>
         </div>
     </div>
@@ -110,13 +107,13 @@
         <div class="modal-content">
             <div class="modal-body">
                 <h6 class="fw-bold mb-3">Datos del Inmueble</h6>
-                <input type="text" id="iDireccion" class="form-control mb-2" placeholder="Dirección completa">
+                <input type="text" id="iDireccion" class="form-control mb-2" placeholder="Dirección">
                 <input type="text" id="iTipo" class="form-control mb-2" placeholder="Tipo (Casa, Comercio, Galpón)">
                 <div class="p-2 border rounded bg-light">
-                    <p class="small fw-bold mb-1">Servicios que posee:</p>
-                    <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Luz"> <label class="form-check-label">Luz Eléctrica</label></div>
+                    <p class="small fw-bold mb-1">Servicios:</p>
+                    <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Luz"> <label class="form-check-label">Luz</label></div>
                     <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Gas Natural"> <label class="form-check-label">Gas Natural</label></div>
-                    <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Gas Envasado"> <label class="form-check-label">Gas Envasado (Garrafa)</label></div>
+                    <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Gas Envasado"> <label class="form-check-label">Gas Envasado</label></div>
                 </div>
                 <button type="button" class="btn btn-success w-100 mt-3" onclick="guardarInmueble()">Guardar Inmueble</button>
             </div>
@@ -174,46 +171,57 @@
     const modInmueble = new bootstrap.Modal(document.getElementById('modalInmueble'));
     const modPersona = new bootstrap.Modal(document.getElementById('modalPersona'));
 
-    // VEHICULOS
     function guardarVehiculo() {
-        const v = { id: 'V'+Date.now(), marca: document.getElementById('vMarca').value, patente: document.getElementById('vPatente').value, uso: document.getElementById('vUso').value, oblea: document.getElementById('vOblea').value };
-        vehiculos.push(v); modVehiculo.hide(); renderVehiculos();
-        document.getElementById('vMarca').value = ''; document.getElementById('vPatente').value = '';
+        const v = { 
+            id: 'V'+Date.now(), 
+            marca: document.getElementById('vMarca').value, 
+            patente: document.getElementById('vPatente').value, 
+            seguro: document.getElementById('vSeguro').value,
+            uso: document.getElementById('vUso').value, 
+            oblea: document.getElementById('vOblea').value 
+        };
+        vehiculos.push(v); 
+        modVehiculo.hide(); 
+        renderVehiculos();
+        document.getElementById('vMarca').value = ''; document.getElementById('vPatente').value = ''; document.getElementById('vSeguro').value = '';
     }
+    
     function renderVehiculos() {
         const l = document.getElementById('listaVehiculos'); l.innerHTML = '';
         vehiculos.forEach(v => l.innerHTML += `<div class="item-list"><button class="btn btn-outline-danger btn-remove" onclick="vehiculos=vehiculos.filter(x=>x.id!=='${v.id}');renderVehiculos()">x</button><strong>${v.marca}</strong> (${v.patente})</div>`);
     }
 
-    // INMUEBLES
     function guardarInmueble() {
         const servs = Array.from(document.querySelectorAll('.i-serv:checked')).map(c => c.value);
         const i = { id: 'I'+Date.now(), dir: document.getElementById('iDireccion').value, tipo: document.getElementById('iTipo').value, servicios: servs.join(', ') };
         inmuebles.push(i); modInmueble.hide(); renderInmuebles();
         document.getElementById('iDireccion').value = ''; document.getElementById('iTipo').value = '';
     }
+    
     function renderInmuebles() {
         const l = document.getElementById('listaInmuebles'); l.innerHTML = '';
         inmuebles.forEach(i => l.innerHTML += `<div class="item-list" style="border-left: 4px solid #198754"><button class="btn btn-outline-danger btn-remove" onclick="inmuebles=inmuebles.filter(x=>x.id!=='${i.id}');renderInmuebles()">x</button><strong>${i.dir}</strong> (${i.tipo})</div>`);
     }
 
-    // PERSONAS
     function prepararModalPersona() {
         const combo = document.getElementById('pVinculo'); combo.innerHTML = '<option value="0">Sin vincular / Peatón</option>';
         vehiculos.forEach(v => combo.innerHTML += `<option value="${v.id}">Vehículo: ${v.marca} (${v.patente})</option>`);
         inmuebles.forEach(i => combo.innerHTML += `<option value="${i.id}">Inmueble: ${i.dir}</option>`);
         modPersona.show();
     }
+    
     function toggleTitularLogica() {
         const r = document.getElementById('pRol').value;
         document.getElementById('divEsTitular').classList.toggle('d-none', r !== 'Conductor');
         document.getElementById('divTitularNombre').classList.toggle('d-none', !(r === 'Conductor' && document.getElementById('pEsTitular').value === 'No'));
     }
+    
     function guardarPersona() {
         const p = { id: Date.now(), nombre: document.getElementById('pNombre').value, dni: document.getElementById('pDni').value, dom: document.getElementById('pDom').value, vinc: document.getElementById('pVinculo').value, rol: document.getElementById('pRol').value, esTit: document.getElementById('pEsTitular').value, titular: document.getElementById('pTitularNombre').value };
         personas.push(p); modPersona.hide(); renderPersonas();
         document.getElementById('pNombre').value = ''; document.getElementById('pDni').value = '';
     }
+    
     function renderPersonas() {
         const l = document.getElementById('listaPersonas'); l.innerHTML = '';
         personas.forEach(p => l.innerHTML += `<div class="item-list" style="border-left: 4px solid #0dcaf0"><button class="btn btn-outline-danger btn-remove" onclick="personas=personas.filter(x=>x.id!==${p.id});renderPersonas()">x</button><strong>${p.nombre}</strong> (${p.rol})</div>`);
@@ -222,15 +230,13 @@
     function enviarWhatsApp() {
         let m = `*RELEVAMIENTO DE SINIESTRO*\n----------------------------------\n`;
         
-        // Agrupar por Inmuebles
         inmuebles.forEach(i => {
             m += `\n🏠 *INMUEBLE:* ${i.dir} (${i.tipo})\n• Servicios: ${i.servicios}\n`;
             personas.filter(p => p.vinc === i.id).forEach(p => m += `  👤 *${p.rol}:* ${p.nombre} (DNI: ${p.dni})\n`);
         });
 
-        // Agrupar por Vehículos
         vehiculos.forEach(v => {
-            m += `\n🚗 *VEHÍCULO:* ${v.marca} | *Pat:* ${v.patente}\n`;
+            m += `\n🚗 *VEHÍCULO:* ${v.marca} | *Pat:* ${v.patente}\n• *Seguro:* ${v.seguro || 'No especificado'}\n`;
             if(v.uso !== 'Particular') m += `• Uso: ${v.uso} (Oblea: ${v.oblea})\n`;
             personas.filter(p => p.vinc === v.id).forEach(p => {
                 m += `  👤 *${p.rol}:* ${p.nombre} (DNI: ${p.dni})\n`;
