@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Relevamiento de Siniestros - Bomberos</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f1f3f5; font-family: sans-serif; }
+        .card { border-top: 5px solid #e03131; border-radius: 12px; }
+        .form-label { font-weight: bold; color: #495057; font-size: 0.85rem; margin-bottom: 2px; }
+        .item-list { background: #fff; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; margin-bottom: 10px; position: relative; }
+        .btn-remove { position: absolute; top: 5px; right: 5px; padding: 0px 8px; font-size: 0.75rem; }
+        .section-title { border-bottom: 2px solid #dee2e6; margin-bottom: 15px; padding-bottom: 5px; color: #dc3545; font-weight: bold; }
+        #avisoNavegador { display: none; background: #ff8787; color: #fff; text-align: center; padding: 8px; font-size: 0.8rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="avisoNavegador">
+    ⚠️ ABRIR EN SAFARI O CHROME <br> 
+    Para que funcione el envío, no lo uses desde el navegador de WhatsApp.
+</div>
+
+<div class="container my-3">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white text-center">
+            <h5 class="mb-0">RELEVAMIENTO TÉCNICO</h5>
+        </div>
+        <div class="card-body">
+            
+            <!-- SECCIÓN VEHÍCULOS -->
+            <div class="section-title">1. VEHÍCULOS INVOLUCRADOS</div>
+            <div id="listaVehiculos" class="mb-3">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm w-100 mb-4" onclick="mostrarModalVehiculo()">+ Agregar Vehículo</button>
+
+            <!-- SECCIÓN PERSONAS -->
+            <div class="section-title">2. PERSONAS IMPLICADAS</div>
+            <div id="listaPersonas" class="mb-3">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm w-100 mb-4" onclick="mostrarModalPersona()">+ Agregar Persona</button>
+
+            <!-- SECCIÓN COLABORADORES -->
+            <div class="section-title">3. SERVICIOS COLABORADORES</div>
+            <div class="row g-2 mb-2">
+                <div class="col-6"><input type="text" id="polMovil" class="form-control form-control-sm" placeholder="Pol. Móvil"></div>
+                <div class="col-6"><input type="text" id="polCargo" class="form-control form-control-sm" placeholder="Encargado"></div>
+            </div>
+            <div class="row g-2 mb-2">
+                <div class="col-6"><input type="text" id="glpMovil" class="form-control form-control-sm" placeholder="GLP Móvil"></div>
+                <div class="col-6"><input type="text" id="glpCargo" class="form-control form-control-sm" placeholder="Encargado"></div>
+            </div>
+            <input type="text" id="ambMoviles" class="form-control form-control-sm mb-2" placeholder="Ambulancias (Móviles)">
+            <textarea id="otrosColab" class="form-control form-control-sm mb-4" rows="2" placeholder="Otros (EPEC, Tránsito, etc.)"></textarea>
+
+            <div class="d-grid gap-2">
+                <button type="button" class="btn btn-success btn-lg" onclick="enviarWhatsApp()">Enviar por WhatsApp</button>
+                <button type="button" class="btn btn-link btn-sm text-secondary" onclick="location.reload()">Limpiar Formulario</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL VEHÍCULO -->
+<div class="modal fade" id="modalVehiculo" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <label class="form-label">Marca/Modelo</label>
+                <input type="text" id="vMarca" class="form-control mb-2" placeholder="Ej: Toyota Hilux">
+                <label class="form-label">Dominio (Patente)</label>
+                <input type="text" id="vPatente" class="form-control mb-2" placeholder="Ej: AF123ZZ">
+                <label class="form-label">Tipo de Uso</label>
+                <select id="vUso" class="form-select mb-2">
+                    <option value="Particular">Particular</option>
+                    <option value="Taxi">Taxi</option>
+                    <option value="Remis">Remis</option>
+                </select>
+                <div id="divOblea" class="d-none border p-2 mb-2 rounded bg-light">
+                    <label class="form-label">N° de Oblea</label>
+                    <input type="text" id="vOblea" class="form-control">
+                </div>
+                <button type="button" class="btn btn-primary w-100 mt-2" onclick="guardarVehiculo()">Guardar Vehículo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PERSONA -->
+<div class="modal fade" id="modalPersona" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <label class="form-label">Nombre y Apellido</label>
+                <input type="text" id="pNombre" class="form-control mb-2">
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><label class="form-label">DNI</label><input type="text" id="pDni" class="form-control"></div>
+                    <div class="col-6"><label class="form-label">Domicilio</label><input type="text" id="pDom" class="form-control"></div>
+                </div>
+                <label class="form-label">Vincular a Vehículo</label>
+                <select id="pViculo" class="form-select mb-2"></select>
+                
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="form-label">Rol</label>
+                        <select id="pRol" class="form-select" onchange="toggleTitularLogica()">
+                            <option value="Pasajero">Pasajero</option>
+                            <option value="Conductor">Conductor</option>
+                            <option value="Peatón">Peatón</option>
+                        </select>
+                    </div>
+                    <div class="col-6 d-none" id="divEsTitular">
+                        <label class="form-label">¿Es Titular?</label>
+                        <select id="pEsTitular" class="form-select" onchange="toggleTitularLogica()">
+                            <option value="Si">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="divTitularNombre" class="d-none border p-2 mb-2 rounded bg-light">
+                    <label class="form-label text-danger">Nombre del Titular Registral</label>
+                    <input type="text" id="pTitularNombre" class="form-control">
+                </div>
+                <button type="button" class="btn btn-primary w-100 mt-2" onclick="guardarPersona()">Guardar Persona</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Detectar Navegador Interno
+    const isWhatsApp = /WhatsApp/i.test(navigator.userAgent);
+    if (isWhatsApp) document.getElementById('avisoNavegador').style.display = 'block';
+
+    let vehiculos = [];
+    let personas = [];
+    const modVehiculo = new bootstrap.Modal(document.getElementById('modalVehiculo'));
+    const modPersona = new bootstrap.Modal(document.getElementById('modalPersona'));
+
+    // Lógica Modales
+    function mostrarModalVehiculo() { modVehiculo.show(); }
+    document.getElementById('vUso').onchange = function() {
+        document.getElementById('divOblea').classList.toggle('d-none', this.value === 'Particular');
+    };
+
+    function guardarVehiculo() {
+        const v = {
+            id: Date.now(),
+            marca: document.getElementById('vMarca').value,
+            patente: document.getElementById('vPatente').value,
+            uso: document.getElementById('vUso').value,
+            oblea: document.getElementById('vOblea').value
+        };
+        vehiculos.push(v);
+        modVehiculo.hide();
+        limpiarCamposVehiculo();
+        renderVehiculos();
+    }
+
+    function renderVehiculos() {
+        const lista = document.getElementById('listaVehiculos');
+        lista.innerHTML = '';
+        vehiculos.forEach(v => {
+            lista.innerHTML += `
+                <div class="item-list">
+                    <button class="btn btn-outline-danger btn-remove" onclick="borrarVehiculo(${v.id})">x</button>
+                    <strong>${v.marca}</strong> - Patente: ${v.patente} (${v.uso})
+                </div>`;
+        });
+    }
+
+    function borrarVehiculo(id) {
+        vehiculos = vehiculos.filter(v => v.id !== id);
+        renderVehiculos();
+    }
+
+    function mostrarModalPersona() {
+        const combo = document.getElementById('pViculo');
+        combo.innerHTML = '<option value="0">Sin vincular / Peatón</option>';
+        vehiculos.forEach(v => {
+            combo.innerHTML += `<option value="${v.id}">${v.marca} (${v.patente})</option>`;
+        });
+        modPersona.show();
+    }
+
+    function toggleTitularLogica() {
+        const rol = document.getElementById('pRol').value;
+        const esTitular = document.getElementById('pEsTitular').value;
+        document.getElementById('divEsTitular').classList.toggle('d-none', rol !== 'Conductor');
+        document.getElementById('divTitularNombre').classList.toggle('d-none', !(rol === 'Conductor' && esTitular === 'No'));
+    }
+
+    function guardarPersona() {
+        const p = {
+            id: Date.now(),
+            nombre: document.getElementById('pNombre').value,
+            dni: document.getElementById('pDni').value,
+            dom: document.getElementById('pDom').value,
+            vinc: document.getElementById('pViculo').value,
+            rol: document.getElementById('pRol').value,
+            esTitular: document.getElementById('pEsTitular').value,
+            titular: document.getElementById('pTitularNombre').value
+        };
+        personas.push(p);
+        modPersona.hide();
+        limpiarCamposPersona();
+        renderPersonas();
+    }
+
+    function renderPersonas() {
+        const lista = document.getElementById('listaPersonas');
+        lista.innerHTML = '';
+        personas.forEach(p => {
+            const vRel = vehiculos.find(v => v.id == p.vinc);
+            const linkText = vRel ? `Vinculado a: ${vRel.marca}` : 'Sin vínculo';
+            lista.innerHTML += `
+                <div class="item-list" style="border-left: 4px solid #0d6efd">
+                    <button class="btn btn-outline-danger btn-remove" onclick="borrarPersona(${p.id})">x</button>
+                    <strong>${p.nombre}</strong> (${p.rol})<br>
+                    <small class="text-muted">${linkText}</small>
+                </div>`;
+        });
+    }
+
+    function borrarPersona(id) {
+        personas = personas.filter(p => p.id !== id);
+        renderPersonas();
+    }
+
+    function limpiarCamposVehiculo() {
+        document.getElementById('vMarca').value = '';
+        document.getElementById('vPatente').value = '';
+        document.getElementById('vUso').value = 'Particular';
+        document.getElementById('vOblea').value = '';
+        document.getElementById('divOblea').classList.add('d-none');
+    }
+
+    function limpiarCamposPersona() {
+        document.getElementById('pNombre').value = '';
+        document.getElementById('pDni').value = '';
+        document.getElementById('pDom').value = '';
+        document.getElementById('pRol').value = 'Pasajero';
+        document.getElementById('divEsTitular').classList.add('d-none');
+        document.getElementById('divTitularNombre').classList.add('d-none');
+    }
+
+    function enviarWhatsApp() {
+        let m = `*RELEVAMIENTO DE SINIESTRO*\n----------------------------------\n`;
+        
+        vehiculos.forEach((v, i) => {
+            m += `\n🚗 *VEHÍCULO ${i+1}:* ${v.marca} | *Pat:* ${v.patente}\n`;
+            if(v.uso !== 'Particular') m += `• Uso: ${v.uso} (Oblea: ${v.oblea})\n`;
+            
+            // Buscar personas de este vehículo
+            const subPersonas = personas.filter(p => p.vinc == v.id);
+            subPersonas.forEach(p => {
+                m += `  👤 *${p.rol}:* ${p.nombre} (DNI: ${p.dni})\n`;
+                m += `  └ Dom: ${p.dom}\n`;
+                if(p.rol === 'Conductor' && p.esTitular === 'No') {
+                    m += `  ⚠️ *Titular Registral:* ${p.titular}\n`;
+                }
+            });
+        });
+
+        const peatones = personas.filter(p => p.vinc == 0);
+        if(peatones.length > 0) {
+            m += `\n🚶 *OTRAS PERSONAS / PEATONES:*\n`;
+            peatones.forEach(p => m += `• ${p.nombre} (DNI: ${p.dni}) - Dom: ${p.dom}\n`);
+        }
+
+        m += `\n🤝 *COLABORADORES:*\n`;
+        const pM = document.getElementById('polMovil').value; if(pM) m += `• Pol: Mov ${pM} (A cargo: ${document.getElementById('polCargo').value})\n`;
+        const gM = document.getElementById('glpMovil').value; if(gM) m += `• GLP: Mov ${gM} (A cargo: ${document.getElementById('glpCargo').value})\n`;
+        const aM = document.getElementById('ambMoviles').value; if(aM) m += `• Amb: ${aM}\n`;
+        const oC = document.getElementById('otrosColab').value; if(oC) m += `• Otros: ${oC}\n`;
+
+        window.location.href = `https://wa.me/?text=${encodeURIComponent(m)}`;
+    }
+</script>
+
+</body>
+</html>
