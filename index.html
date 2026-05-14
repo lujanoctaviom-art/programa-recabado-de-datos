@@ -16,21 +16,15 @@
         .item-list { background: var(--bs-tertiary-bg); border: 1px solid var(--bs-border-color); border-radius: 8px; padding: 10px; margin-bottom: 10px; position: relative; }
         .btn-remove { position: absolute; top: 5px; right: 5px; padding: 0px 8px; font-size: 0.75rem; }
         .section-title { border-bottom: 2px solid var(--bs-border-color); margin-bottom: 15px; padding-bottom: 5px; color: var(--red-fire); font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
-        #avisoNavegador { display: none; background: #ff8787; color: #fff; text-align: center; padding: 8px; font-size: 0.8rem; font-weight: bold; }
-        .bg-bomberos { background-color: rgba(224, 49, 49, 0.05); border: 1px solid var(--red-fire); }
+        .bg-amb { background-color: rgba(13, 110, 253, 0.05); border: 1px solid #0d6efd; }
         .trailer-item { background: var(--bs-secondary-bg); padding: 8px; border-radius: 5px; margin-top: 5px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-<div id="avisoNavegador">
-    ⚠️ ABRIR EN SAFARI O CHROME <br> 
-    Para enviar los datos, no uses el navegador interno de WhatsApp.
-</div>
-
 <nav class="navbar navbar-dark bg-dark mb-3">
     <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1" style="font-size: 1rem;">🚒 BOMBEROS - RELEVAMIENTO</span>
+        <span class="navbar-brand mb-0 h1" style="font-size: 0.9rem;">🚒 RELEVAMIENTO TÉCNICO</span>
         <button class="btn btn-outline-light btn-sm" onclick="toggleTheme()" id="btnTheme">🌙 Modo Oscuro</button>
     </div>
 </nav>
@@ -39,18 +33,22 @@
     <div class="card shadow-sm">
         <div class="card-body">
             
+            <!-- SECCIÓN VEHÍCULOS -->
             <div class="section-title">1. Vehículos Involucrados</div>
             <div id="listaVehiculos" class="mb-2"></div>
             <button type="button" class="btn btn-outline-primary btn-sm w-100 mb-4" onclick="modVehiculo.show()">+ Agregar Vehículo</button>
 
+            <!-- SECCIÓN INMUEBLES -->
             <div class="section-title">2. Inmuebles Implicados</div>
             <div id="listaInmuebles" class="mb-2"></div>
             <button type="button" class="btn btn-outline-success btn-sm w-100 mb-4" onclick="modInmueble.show()">+ Agregar Inmueble</button>
 
+            <!-- SECCIÓN PERSONAS -->
             <div class="section-title">3. Personas Implicadas</div>
             <div id="listaPersonas" class="mb-2"></div>
             <button type="button" class="btn btn-outline-info btn-sm w-100 mb-4" onclick="prepararModalPersona()">+ Agregar Persona</button>
 
+            <!-- SECCIÓN COLABORADORES -->
             <div class="section-title">4. Servicios Colaboradores</div>
             <div class="row g-2 mb-3">
                 <div class="col-6"><input type="text" id="polMovil" class="form-control form-control-sm" placeholder="Pol. Móvil"></div>
@@ -62,9 +60,10 @@
             </div>
             <textarea id="otrosColab" class="form-control form-control-sm mb-4" rows="1" placeholder="Otros (EPEC, Tránsito, etc.)"></textarea>
 
-            <div class="section-title">5. Material de Bomberos</div>
-            <div class="p-3 mb-4 rounded bg-bomberos">
-                <textarea id="elementosBomberos" class="form-control form-control-sm" rows="2" placeholder="Material utilizado..."></textarea>
+            <!-- SECCIÓN MATERIAL AMBULANCIA -->
+            <div class="section-title">5. Materiales que se lleva Ambulancia</div>
+            <div class="p-3 mb-4 rounded bg-amb">
+                <textarea id="materialAmbulancia" class="form-control form-control-sm" rows="3" placeholder="Ej: Tabla rígida, 2 juegos de inmovilizadores laterales, cuello cervical, etc."></textarea>
             </div>
 
             <div class="d-grid gap-2">
@@ -80,45 +79,56 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
-                <h6 class="fw-bold mb-3">Datos del Vehículo</h6>
+                <h6 class="fw-bold mb-3 text-primary">Datos del Vehículo</h6>
                 <div class="row g-2 mb-2">
                     <div class="col-6">
                         <label class="form-label">Tipo</label>
                         <select id="vTipo" class="form-select" onchange="toggleCamionLogic()">
-                            <option value="Auto">Auto</option>
-                            <option value="Moto">Moto</option>
-                            <option value="Colectivo">Colectivo</option>
-                            <option value="Camión">Camión</option>
+                            <option value="Auto">Auto</option><option value="Moto">Moto</option>
+                            <option value="Colectivo">Colectivo</option><option value="Camión">Camión</option>
                         </select>
                     </div>
                     <div class="col-6">
                         <label class="form-label">Uso</label>
                         <select id="vUso" class="form-select" onchange="toggleObleaLogic()">
-                            <option value="Particular">Particular</option>
-                            <option value="Taxi">Taxi</option>
-                            <option value="Remis">Remis</option>
-                            <option value="App">App</option>
-                            <option value="Flota">Flota</option>
-                            <option value="Transporte">Emp. Transporte</option>
+                            <option value="Particular">Particular</option><option value="Taxi">Taxi</option>
+                            <option value="Remis">Remis</option><option value="App">App</option>
+                            <option value="Flota">Flota</option><option value="Transporte">Emp. Transporte</option>
                         </select>
                     </div>
                 </div>
                 <input type="text" id="vMarca" class="form-control mb-2" placeholder="Marca/Modelo">
                 <input type="text" id="vPatente" class="form-control mb-2" placeholder="Patente">
                 <input type="text" id="vSeguro" class="form-control mb-2" placeholder="Compañía de Seguro">
-                
                 <div id="divOblea" class="d-none mb-2 border p-2 rounded bg-light text-dark">
-                    <input type="text" id="vOblea" class="form-control" placeholder="Info Adicional / Oblea">
+                    <input type="text" id="vOblea" class="form-control" placeholder="Oblea / Empresa">
                 </div>
-
-                <!-- Lógica Camión -->
                 <div id="divCamion" class="d-none border-top pt-2 mt-2">
-                    <p class="small fw-bold text-danger mb-1">ACOPLADOS / TRAILERS</p>
+                    <p class="small fw-bold text-danger mb-1">ACOPLADOS</p>
                     <div id="listaTrailers"></div>
                     <button type="button" class="btn btn-outline-danger btn-sm w-100 mt-1" onclick="agregarFilaTrailer()">+ Agregar Acoplado</button>
                 </div>
-
                 <button type="button" class="btn btn-primary w-100 mt-3" onclick="guardarVehiculo()">Guardar Vehículo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL INMUEBLE -->
+<div class="modal fade" id="modalInmueble" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h6 class="fw-bold mb-3 text-success">Datos del Inmueble</h6>
+                <input type="text" id="iDireccion" class="form-control mb-2" placeholder="Dirección">
+                <input type="text" id="iTipo" class="form-control mb-2" placeholder="Tipo (Vivienda, Taller, etc)">
+                <div class="p-2 border rounded bg-light text-dark">
+                    <p class="small fw-bold mb-1">Servicios:</p>
+                    <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Luz"> <label>Luz</label></div>
+                    <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Gas Natural"> <label>Gas Natural</label></div>
+                    <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Gas Envasado"> <label>Gas Envasado</label></div>
+                </div>
+                <button type="button" class="btn btn-success w-100 mt-3" onclick="guardarInmueble()">Guardar Inmueble</button>
             </div>
         </div>
     </div>
@@ -129,7 +139,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
-                <h6 class="fw-bold mb-3">Datos de la Persona</h6>
+                <h6 class="fw-bold mb-3 text-info">Datos de la Persona</h6>
                 <input type="text" id="pNombre" class="form-control mb-2" placeholder="Nombre y Apellido">
                 <div class="row g-2 mb-2">
                     <div class="col-4"><label class="form-label">Edad</label><input type="number" id="pEdad" class="form-control"></div>
@@ -138,7 +148,7 @@
                 <input type="text" id="pDom" class="form-control mb-2" placeholder="Domicilio">
                 <label class="form-label text-primary">Vincular a:</label>
                 <select id="pVinculo" class="form-select mb-2"></select>
-                <div class="row g-2">
+                <div class="row g-2 mb-2">
                     <div class="col-6">
                         <label class="form-label">Rol</label>
                         <select id="pRol" class="form-select" onchange="toggleTitularLogica()">
@@ -165,29 +175,8 @@
     </div>
 </div>
 
-<!-- MODAL INMUEBLE -->
-<div class="modal fade" id="modalInmueble" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <h6 class="fw-bold mb-3">Datos del Inmueble</h6>
-                <input type="text" id="iDireccion" class="form-control mb-2" placeholder="Dirección">
-                <input type="text" id="iTipo" class="form-control mb-2" placeholder="Tipo (Casa, Galpón, etc)">
-                <div class="p-2 border rounded bg-light text-dark">
-                    <p class="small fw-bold mb-1">Servicios:</p>
-                    <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Luz"> <label>Luz</label></div>
-                    <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Gas Natural"> <label>Gas Natural</label></div>
-                    <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Gas Envasado"> <label>Gas Envasado</label></div>
-                </div>
-                <button type="button" class="btn btn-success w-100 mt-3" onclick="guardarInmueble()">Guardar Inmueble</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // --- TEMAS ---
     function toggleTheme() {
         const html = document.documentElement;
         const current = html.getAttribute('data-bs-theme');
@@ -196,82 +185,41 @@
         document.getElementById('btnTheme').innerText = next === 'light' ? '🌙 Modo Oscuro' : '☀️ Modo Claro';
     }
 
-    // --- LÓGICA GENERAL ---
     let vehiculos = [], inmuebles = [], personas = [];
     const modVehiculo = new bootstrap.Modal(document.getElementById('modalVehiculo'));
-    const modPersona = new bootstrap.Modal(document.getElementById('modalPersona'));
     const modInmueble = new bootstrap.Modal(document.getElementById('modalInmueble'));
+    const modPersona = new bootstrap.Modal(document.getElementById('modalPersona'));
 
-    function toggleCamionLogic() {
-        const tipo = document.getElementById('vTipo').value;
-        document.getElementById('divCamion').classList.toggle('d-none', tipo !== 'Camión');
-    }
-
-    function toggleObleaLogic() {
-        const uso = document.getElementById('vUso').value;
-        document.getElementById('divOblea').classList.toggle('d-none', uso === 'Particular');
-    }
-
+    function toggleCamionLogic() { document.getElementById('divCamion').classList.toggle('d-none', document.getElementById('vTipo').value !== 'Camión'); }
+    function toggleObleaLogic() { document.getElementById('divOblea').classList.toggle('d-none', document.getElementById('vUso').value === 'Particular'); }
     function agregarFilaTrailer() {
-        const container = document.getElementById('listaTrailers');
-        const div = document.createElement('div');
-        div.className = 'trailer-item border-bottom mb-2 pb-2';
-        div.innerHTML = `
-            <div class="row g-1">
-                <div class="col-7"><input type="text" class="form-control form-control-sm t-patente" placeholder="Patente Acoplado"></div>
-                <div class="col-5 d-flex align-items-center">
-                    <div class="form-check small"><input class="form-check-input t-seguro" type="checkbox"> <label class="text-dark">Seguro Dif.</label></div>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
+        const div = document.createElement('div'); div.className = 'trailer-item mb-2';
+        div.innerHTML = `<div class="row g-1"><div class="col-7"><input type="text" class="form-control form-control-sm t-patente" placeholder="Patente Acoplado"></div><div class="col-5 d-flex align-items-center"><div class="form-check small"><input class="form-check-input t-seguro" type="checkbox"> <label class="text-dark">Seguro Dif.</label></div></div></div>`;
+        document.getElementById('listaTrailers').appendChild(div);
     }
 
     function guardarVehiculo() {
-        const tItems = Array.from(document.querySelectorAll('.trailer-item')).map(div => ({
-            patente: div.querySelector('.t-patente').value,
-            seguroDif: div.querySelector('.t-seguro').checked
-        }));
-
-        const v = {
-            id: 'V'+Date.now(),
-            tipo: document.getElementById('vTipo').value,
-            uso: document.getElementById('vUso').value,
-            marca: document.getElementById('vMarca').value,
-            patente: document.getElementById('vPatente').value,
-            seguro: document.getElementById('vSeguro').value,
-            oblea: document.getElementById('vOblea').value,
-            trailers: tItems
-        };
-        vehiculos.push(v);
-        modVehiculo.hide();
-        renderVehiculos();
-        resetCamposVehiculo();
+        const trailers = Array.from(document.querySelectorAll('.trailer-item')).map(d => ({ patente: d.querySelector('.t-patente').value, seguroDif: d.querySelector('.t-seguro').checked }));
+        vehiculos.push({ id: 'V'+Date.now(), tipo: document.getElementById('vTipo').value, uso: document.getElementById('vUso').value, marca: document.getElementById('vMarca').value, patente: document.getElementById('vPatente').value, seguro: document.getElementById('vSeguro').value, oblea: document.getElementById('vOblea').value, trailers });
+        modVehiculo.hide(); renderVehiculos(); resetCamposVehiculo();
     }
-
     function renderVehiculos() {
         const l = document.getElementById('listaVehiculos'); l.innerHTML = '';
-        vehiculos.forEach(v => l.innerHTML += `<div class="item-list"><button class="btn btn-outline-danger btn-remove" onclick="vehiculos=vehiculos.filter(x=>x.id!=='${v.id}');renderVehiculos()">x</button><strong>${v.tipo}: ${v.marca}</strong> (${v.patente})</div>`);
+        vehiculos.forEach(v => l.innerHTML += `<div class="item-list"><button class="btn btn-outline-danger btn-remove" onclick="vehiculos=vehiculos.filter(x=>x.id!=='${v.id}');renderVehiculos()">x</button><strong>${v.marca}</strong> (${v.patente})</div>`);
+    }
+    function resetCamposVehiculo() { 
+        document.getElementById('vMarca').value = ''; document.getElementById('vPatente').value = ''; document.getElementById('vSeguro').value = ''; document.getElementById('vOblea').value = '';
+        document.getElementById('listaTrailers').innerHTML = ''; document.getElementById('vTipo').value = 'Auto'; toggleCamionLogic();
     }
 
-    function resetCamposVehiculo() {
-        document.getElementById('vMarca').value = ''; document.getElementById('vPatente').value = '';
-        document.getElementById('vSeguro').value = ''; document.getElementById('vOblea').value = '';
-        document.getElementById('listaTrailers').innerHTML = '';
-        document.getElementById('divCamion').classList.add('d-none');
-        document.getElementById('vTipo').value = 'Auto';
-    }
-
-    // --- INMUEBLES & PERSONAS (Similares a versiones anteriores con agregado de EDAD) ---
     function guardarInmueble() {
-        const servs = Array.from(document.querySelectorAll('.i-serv:checked')).map(c => c.value);
-        const i = { id: 'I'+Date.now(), dir: document.getElementById('iDireccion').value, tipo: document.getElementById('iTipo').value, servicios: servs.join(', ') };
-        inmuebles.push(i); modInmueble.hide(); renderInmuebles();
+        const s = Array.from(document.querySelectorAll('.i-serv:checked')).map(c => c.value);
+        inmuebles.push({ id: 'I'+Date.now(), dir: document.getElementById('iDireccion').value, tipo: document.getElementById('iTipo').value, servicios: s.join(', ') });
+        modInmueble.hide(); renderInmuebles();
     }
-
     function renderInmuebles() {
         const l = document.getElementById('listaInmuebles'); l.innerHTML = '';
-        inmuebles.forEach(i => l.innerHTML += `<div class="item-list"><button class="btn btn-outline-danger btn-remove" onclick="inmuebles=inmuebles.filter(x=>x.id!=='${i.id}');renderInmuebles()">x</button><strong>${i.dir}</strong></div>`);
+        inmuebles.forEach(i => l.innerHTML += `<div class="item-list"><strong>${i.dir}</strong></div>`);
     }
 
     function prepararModalPersona() {
@@ -280,71 +228,42 @@
         inmuebles.forEach(i => combo.innerHTML += `<option value="${i.id}">I: ${i.dir}</option>`);
         modPersona.show();
     }
-
-    function toggleTitularLogica() {
-        const r = document.getElementById('pRol').value;
-        document.getElementById('divEsTitular').classList.toggle('d-none', r !== 'Conductor');
-    }
-
+    function toggleTitularLogica() { document.getElementById('divEsTitular').classList.toggle('d-none', document.getElementById('pRol').value !== 'Conductor'); }
     function guardarPersona() {
-        const p = { 
-            id: Date.now(), 
-            nombre: document.getElementById('pNombre').value, 
-            edad: document.getElementById('pEdad').value,
-            dni: document.getElementById('pDni').value, 
-            dom: document.getElementById('pDom').value, 
-            vinc: document.getElementById('pVinculo').value, 
-            rol: document.getElementById('pRol').value, 
-            esTit: document.getElementById('pEsTitular').value, 
-            titular: document.getElementById('pTitularNombre').value 
-        };
-        personas.push(p); modPersona.hide(); renderPersonas();
+        personas.push({ id: Date.now(), nombre: document.getElementById('pNombre').value, edad: document.getElementById('pEdad').value, dni: document.getElementById('pDni').value, dom: document.getElementById('pDom').value, vinc: document.getElementById('pVinculo').value, rol: document.getElementById('pRol').value, esTit: document.getElementById('pEsTitular').value, titular: document.getElementById('pTitularNombre').value });
+        modPersona.hide(); renderPersonas();
     }
-
     function renderPersonas() {
         const l = document.getElementById('listaPersonas'); l.innerHTML = '';
-        personas.forEach(p => l.innerHTML += `<div class="item-list"><strong>${p.nombre}</strong> (${p.edad} años)</div>`);
+        personas.forEach(p => l.innerHTML += `<div class="item-list"><strong>${p.nombre}</strong> (${p.rol})</div>`);
     }
 
-    // --- WHATSAPP ---
     function enviarWhatsApp() {
         let m = `*RELEVAMIENTO DE SINIESTRO*\n----------------------------------\n`;
-        
         inmuebles.forEach(i => {
-            m += `\n🏠 *INMUEBLE:* ${i.dir}\n• Servicios: ${i.servicios}\n`;
+            m += `\n🏠 *INMUEBLE:* ${i.dir} (${i.tipo})\n• Servicios: ${i.servicios}\n`;
             personas.filter(p => p.vinc === i.id).forEach(p => m += `  👤 *${p.rol}:* ${p.nombre} (${p.edad} años)\n`);
         });
-
         vehiculos.forEach(v => {
-            let emoji = v.tipo === 'Moto' ? '🏍️' : v.tipo === 'Camión' ? '🚛' : '🚗';
-            m += `\n${emoji} *${v.tipo.toUpperCase()}:* ${v.marca} | ${v.patente}\n• *Seguro:* ${v.seguro || 'N/S'}\n`;
+            let e = v.tipo === 'Moto' ? '🏍️' : v.tipo === 'Camión' ? '🚛' : '🚗';
+            m += `\n${e} *${v.tipo.toUpperCase()}:* ${v.marca} | ${v.patente}\n• Seguro: ${v.seguro || 'N/S'}\n`;
             if(v.uso !== 'Particular') m += `• Uso: ${v.uso} (${v.oblea})\n`;
-            
-            if(v.trailers.length > 0) {
-                v.trailers.forEach((t, idx) => {
-                    m += `  📦 *Acoplado ${idx+1}:* ${t.patente} ${t.seguroDif ? '[Seguro Diferenciado]' : ''}\n`;
-                });
-            }
-
+            v.trailers.forEach((t, x) => m += `  📦 *Acoplado ${x+1}:* ${t.patente} ${t.seguroDif ? '[Seguro Dif.]' : ''}\n`);
             personas.filter(p => p.vinc === v.id).forEach(p => {
-                m += `  👤 *${p.rol}:* ${p.nombre} (${p.edad} años) - DNI: ${p.dni}\n`;
-                if(p.rol==='Conductor' && p.esTit==='No') m += `  ⚠️ *Titular:* ${p.titular}\n`;
+                m += `  👤 *${p.rol}:* ${p.nombre} (${p.edad} años)\n`;
+                if(p.rol === 'Conductor' && p.esTit === 'No') m += `  ⚠️ *Titular:* ${p.titular}\n`;
             });
         });
-
         const sueltos = personas.filter(p => p.vinc === '0');
         if(sueltos.length > 0) {
             m += `\n🚶 *PEATONES / OTROS:*\n`;
             sueltos.forEach(p => m += `• ${p.nombre} (${p.edad} años) - DNI: ${p.dni}\n`);
         }
-
         m += `\n🤝 *COLABORADORES:*\n`;
         if(document.getElementById('polMovil').value) m += `• Pol: Mov ${document.getElementById('polMovil').value} (Enc: ${document.getElementById('polCargo').value})\n`;
         if(document.getElementById('ambMovil').value) m += `• Amb: Mov ${document.getElementById('ambMovil').value} (Enc: ${document.getElementById('ambCargo').value})\n`;
-
-        const mat = document.getElementById('elementosBomberos').value;
-        if(mat) m += `\n🚒 *MATERIAL BOMBEROS:*\n${mat}\n`;
-
+        const mat = document.getElementById('materialAmbulancia').value;
+        if(mat) m += `\n🚑 *MATERIAL EN AMBULANCIA:*\n${mat}\n`;
         window.location.href = `https://wa.me/?text=${encodeURIComponent(m)}`;
     }
 </script>
