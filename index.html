@@ -77,7 +77,7 @@
                 </div>
                 <!-- GLP -->
                 <div class="row g-2 colab-row">
-                    <div class="col-4 fw-bold small text-body">GLP </div>
+                    <div class="col-4 fw-bold small text-body">GLP (Gas)</div>
                     <div class="col-4"><input type="text" id="col_glp_movil" class="form-control form-control-sm text-center" oninput="sincronizarTexto()"></div>
                     <div class="col-4"><input type="text" id="col_glp_enc" class="form-control form-control-sm" oninput="sincronizarTexto()"></div>
                 </div>
@@ -140,12 +140,12 @@
 
                 <div class="tutorial-step">
                     <h6>3. Carga de Inmuebles Implicados</h6>
-                    <p class="small mb-0">Tocá el botón "+ Agregar Inmueble". Ingresá la Dirección y el Tipo de edificación (Casa, Comercio, Galpón). Tildá los servicios verificados en la escena (Luz, Gas Natural, Gas Envasado) y tocá "Guardar".</p>
+                    <p class="small mb-0">Tocá el botón "+ Agregar Inmueble". Ingresá la Dirección y elegí el Tipo de edificación. <strong>Importante:</strong> Si seleccionás "Departamento", aparecerán los campos para ingresar el Piso y el N° de Depto. Tildá los servicios verificados en la escena (Luz, Gas Natural, Gas Envasado) y tocá "Guardar".</p>
                 </div>
 
                 <div class="tutorial-step">
                     <h6>4. Carga y Vinculación de Personas</h6>
-                    <p class="small mb-1">Tocá el botón "+ Agregar Persona". Ingresá Nombre, Edad (dato clave para el reporte sanitario) y DNI.</p>
+                    <p class="small mb-1">Tocá el botón "+ Agregar Persona". Ingresá Nombre, Edad y DNI.</p>
                     <p class="small mb-1"><strong>Vincular a:</strong> Este paso es fundamental. Seleccioná en el menú desplegable a qué vehículo o inmueble pertenece esa persona. Si es un peatón o testigo, dejalo en "Sin vínculo". Seleccioná el Rol (Habitante, Pasajero, Conductor o Peatón).</p>
                     <p class="small mb-1"><strong>Lógica de Conductor:</strong> Si marcás que es Conductor, el sistema te preguntará si es el titular registral. Si seleccionás "No", se abrirá un campo abajo para escribir el nombre del dueño del auto.</p>
                     <p class="small mb-0">💡 <strong>¿Te equivocaste en un dato?</strong> Al lado de cada elemento en la pantalla principal verás el botón "Editar". Tocalo para reabrir el formulario, corregir la información y volver a guardar sin duplicar el registro.</p>
@@ -158,8 +158,8 @@
                 </div>
 
                 <div class="tutorial-step">
-                    <h6>5. EXPORTACIÓN DE DATOS</h6>
-                    <p class="small mb-0">Una vez finalizada la carga, presioná el botón verde grande "Enviar por WhatsApp". El programa procesará toda la información de manera inteligente, agrupará a los pasajeros debajo de cada vehículo correspondiente, a los habitantes debajo de su respectivo inmueble y generará un mensaje de texto perfectamente estructurado con negritas y emojis técnicos. Solo restará seleccionar el grupo operativo del cuartel para enviar el reporte.</p>
+                    <h6>6. EXPORTACIÓN DE DATOS</h6>
+                    <p class="small mb-0">Una vez finalizada la carga, presioná el botón verde grande "Enviar por WhatsApp". El programa procesará toda la información de manera inteligente y generará un mensaje de texto perfectamente estructurado con negritas y emojis técnicos. Solo restará seleccionar el grupo operativo del cuartel para enviar el reporte.</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -218,7 +218,22 @@
                 <h6 class="fw-bold mb-3 text-success" id="lblModalInmueble">Datos del Inmueble</h6>
                 <input type="hidden" id="iId">
                 <input type="text" id="iDireccion" class="form-control mb-2" placeholder="Dirección">
-                <input type="text" id="iTipo" class="form-control mb-2" placeholder="Tipo (Vivienda, Taller, etc)">
+                
+                <label class="form-label">Tipo de Inmueble</label>
+                <select id="iTipo" class="form-select mb-2" onchange="toggleDeptoLogic()">
+                    <option value="Casa">Casa / Vivienda</option>
+                    <option value="Departamento">Departamento</option>
+                    <option value="Comercio">Comercio / Local</option>
+                    <option value="Galpón">Galpón / Depósito</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                
+                <!-- Campos condicionales para Departamento -->
+                <div id="divDepto" class="row g-2 mb-2 d-none">
+                    <div class="col-6"><input type="text" id="iPiso" class="form-control" placeholder="Piso (Ej: 2)"></div>
+                    <div class="col-6"><input type="text" id="iDpto" class="form-control" placeholder="Depto (Ej: B)"></div>
+                </div>
+
                 <div class="p-2 border rounded bg-light text-dark">
                     <p class="small fw-bold mb-1">Servicios:</p>
                     <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Luz"> <label>Luz</label></div>
@@ -359,6 +374,7 @@
         intv.materialAmbulancia = document.getElementById('materialAmbulancia').value;
     }
 
+    // --- VEHÍCULOS ---
     function abrirModalVehiculo() {
         document.getElementById('vId').value = ''; document.getElementById('vMarca').value = ''; document.getElementById('vPatente').value = '';
         document.getElementById('vSeguro').value = ''; document.getElementById('vOblea').value = ''; document.getElementById('vTipo').value = 'Auto';
@@ -404,22 +420,48 @@
         document.getElementById('listaTrailers').appendChild(div);
     }
 
+    // --- INMUEBLES ---
+    function toggleDeptoLogic() {
+        const tipo = document.getElementById('iTipo').value;
+        document.getElementById('divDepto').classList.toggle('d-none', tipo !== 'Departamento');
+    }
+
     function abrirModalInmueble() {
-        document.getElementById('iId').value = ''; document.getElementById('iDireccion').value = ''; document.getElementById('iTipo').value = '';
-        document.querySelectorAll('.i-serv').forEach(c => c.checked = false); document.getElementById('lblModalInmueble').innerText = "Agregar Inmueble"; modInmueble.show();
+        document.getElementById('iId').value = ''; 
+        document.getElementById('iDireccion').value = ''; 
+        document.getElementById('iTipo').value = 'Casa';
+        document.getElementById('iPiso').value = '';
+        document.getElementById('iDpto').value = '';
+        document.querySelectorAll('.i-serv').forEach(c => c.checked = false); 
+        document.getElementById('lblModalInmueble').innerText = "Agregar Inmueble"; 
+        toggleDeptoLogic();
+        modInmueble.show();
     }
 
     function editarInmueble(id) {
         const i = getActiva().inmuebles.find(x => x.id === id); if(!i) return;
-        document.getElementById('iId').value = i.id; document.getElementById('iDireccion').value = i.dir; document.getElementById('iTipo').value = i.tipo;
+        document.getElementById('iId').value = i.id; 
+        document.getElementById('iDireccion').value = i.dir; 
+        document.getElementById('iTipo').value = i.tipo;
+        document.getElementById('iPiso').value = i.piso || '';
+        document.getElementById('iDpto').value = i.dpto || '';
         document.querySelectorAll('.i-serv').forEach(c => { c.checked = i.servicios.includes(c.value); });
-        document.getElementById('lblModalInmueble').innerText = "Editar Inmueble"; modInmueble.show();
+        document.getElementById('lblModalInmueble').innerText = "Editar Inmueble"; 
+        toggleDeptoLogic();
+        modInmueble.show();
     }
 
     function guardarInmueble() {
         const intv = getActiva(); const id = document.getElementById('iId').value;
         const s = Array.from(document.querySelectorAll('.i-serv:checked')).map(c => c.value);
-        const iData = { id: id || 'I'+Date.now(), dir: document.getElementById('iDireccion').value, tipo: document.getElementById('iTipo').value, servicios: s.join(', ') };
+        const iData = { 
+            id: id || 'I'+Date.now(), 
+            dir: document.getElementById('iDireccion').value, 
+            tipo: document.getElementById('iTipo').value, 
+            piso: document.getElementById('iPiso').value,
+            dpto: document.getElementById('iDpto').value,
+            servicios: s.join(', ') 
+        };
         if(id) { intv.inmuebles = intv.inmuebles.map(x => x.id === id ? iData : x); } else { intv.inmuebles.push(iData); }
         modInmueble.hide(); renderInmuebles();
     }
@@ -427,10 +469,15 @@
     function renderInmuebles() {
         const l = document.getElementById('listaInmuebles'); l.innerHTML = '';
         getActiva().inmuebles.forEach(i => {
-            l.innerHTML += `<div class="item-list" style="border-left: 4px solid #198754"><strong>${i.dir}</strong> (${i.tipo})<div class="btn-actions"><button class="btn btn-sm btn-outline-primary py-0 me-1" onclick="editarInmueble('${i.id}')">Editar</button><button class="btn btn-sm btn-outline-danger py-0" onclick="getActiva().inmuebles=getActiva().inmuebles.filter(x=>x.id!=='${i.id}');renderInmuebles()">x</button></div></div>`;
+            let descTipo = i.tipo;
+            if(i.tipo === 'Departamento' && (i.piso || i.dpto)) {
+                descTipo += ` (Piso ${i.piso || '-'} Depto ${i.dpto || '-'})`;
+            }
+            l.innerHTML += `<div class="item-list" style="border-left: 4px solid #198754"><strong>${i.dir}</strong> - ${descTipo}<div class="btn-actions"><button class="btn btn-sm btn-outline-primary py-0 me-1" onclick="editarInmueble('${i.id}')">Editar</button><button class="btn btn-sm btn-outline-danger py-0" onclick="getActiva().inmuebles=getActiva().inmuebles.filter(x=>x.id!=='${i.id}');renderInmuebles()">x</button></div></div>`;
         });
     }
 
+    // --- PERSONAS ---
     function prepararModalPersona() {
         document.getElementById('pId').value = ''; document.getElementById('pNombre').value = ''; document.getElementById('pEdad').value = '';
         document.getElementById('pDni').value = ''; document.getElementById('pDom').value = ''; document.getElementById('pRol').value = 'Pasajero';
@@ -479,12 +526,15 @@
         document.getElementById('btnTheme').innerText = next === 'light' ? '🌙 Modo Oscuro' : '☀️ Modo Claro';
     }
 
+    // --- WHATSAPP ---
     function enviarWhatsApp() {
         const intv = getActiva();
         let m = `*RELEVAMIENTO DE SINIESTRO (${intv.titulo})*\n----------------------------------\n`;
         
         intv.inmuebles.forEach(i => {
-            m += `\n🏠 *INMUEBLE:* ${i.dir} (${i.tipo})\n• Servicios: ${i.servicios}\n`;
+            let tipoDisplay = i.tipo;
+            if (i.tipo === 'Departamento') tipoDisplay += ` (Piso: ${i.piso || '-'} | Dpto: ${i.dpto || '-'})`;
+            m += `\n🏠 *INMUEBLE:* ${i.dir} - ${tipoDisplay}\n• Servicios: ${i.servicios}\n`;
             intv.personas.filter(p => p.vinc === i.id).forEach(p => m += `  👤 *${p.rol}:* ${p.nombre} (${p.edad} años)\n`);
         });
 
