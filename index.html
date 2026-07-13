@@ -135,7 +135,7 @@
 
                 <div class="tutorial-step">
                     <h6>2. Carga de Vehículos Involucrados</h6>
-                    <p class="small mb-0">Tocá el botón "+ Agregar Vehículo". Seleccioná el Tipo (Auto, Moto, Colectivo o Camión) y el Uso (Particular, Taxi, Remis, App, Flota o Transporte). Si elegís un uso comercial o de aplicación, se desplegará un campo para anotar el número de oblea, empresa o interno. Completá Marca/Modelo, Patente y Seguro. <strong>Lógica de Camiones:</strong> Si seleccionás "Camión", aparecerá el botón "+ Agregar Acoplado" para sumar patentes y tildar si poseen seguro diferenciado. Tocá "Guardar".</p>
+                    <p class="small mb-0">Tocá el botón "+ Agregar Vehículo". Seleccioná el Tipo (Auto, Motocicleta, Camioneta, Colectivo o Camión) y el Uso (Particular, Taxi, Remis, App, Flota o Transporte). Si elegís un uso comercial o de aplicación, se desplegará un campo para anotar el número de oblea, empresa o interno. Completá Marca/Modelo, Patente y Seguro. <strong>Lógica de Camiones:</strong> Si seleccionás "Camión", aparecerá el botón "+ Agregar Acoplado" para sumar patentes y tildar si poseen seguro diferenciado. Tocá "Guardar".</p>
                 </div>
 
                 <div class="tutorial-step">
@@ -147,7 +147,7 @@
                     <h6>4. Carga y Vinculación de Personas</h6>
                     <p class="small mb-1">Tocá el botón "+ Agregar Persona". Ingresá Nombre, Edad y DNI.</p>
                     <p class="small mb-1"><strong>Vincular a:</strong> Este paso es fundamental. Seleccioná en el menú desplegable a qué vehículo o inmueble pertenece esa persona. Si es un peatón o testigo, dejalo en "Sin vínculo". Seleccioná el Rol (Habitante, Pasajero, Conductor o Peatón).</p>
-                    <p class="small mb-1"><strong>Lógica de Conductor:</strong> Si marcás que es Conductor, el sistema te preguntará si es el titular registral. Si seleccionás "No", se abrirá un campo abajo para escribir el nombre del dueño del auto.</p>
+                    <p class="small mb-1"><strong>Lógica de Conductor:</strong> Si marcás que es Conductor, el sistema te preguntará si es el titular registral. Si seleccionás "No", se abrirá un campo abajo para escribir el nombre y el DNI del dueño del auto.</p>
                     <p class="small mb-0">💡 <strong>¿Te equivocaste en un dato?</strong> Al lado de cada elemento en la pantalla principal verás el botón "Editar". Tocalo para reabrir el formulario, corregir la información y volver a guardar sin duplicar el registro.</p>
                 </div>
 
@@ -180,8 +180,11 @@
                     <div class="col-6">
                         <label class="form-label">Tipo</label>
                         <select id="vTipo" class="form-select" onchange="toggleCamionLogic()">
-                            <option value="Auto">Auto</option><option value="Moto">Moto</option>
-                            <option value="Colectivo">Colectivo</option><option value="Camión">Camión</option>
+                            <option value="Auto">Auto</option>
+                            <option value="Motocicleta">Motocicleta</option>
+                            <option value="Camioneta">Camioneta</option>
+                            <option value="Colectivo">Colectivo</option>
+                            <option value="Camión">Camión</option>
                         </select>
                     </div>
                     <div class="col-6">
@@ -277,7 +280,8 @@
                     </div>
                 </div>
                 <div id="divTitularNombre" class="d-none border p-2 mt-2 rounded bg-light text-dark">
-                    <input type="text" id="pTitularNombre" class="form-control" placeholder="Nombre del Titular">
+                    <input type="text" id="pTitularNombre" class="form-control mb-2" placeholder="Nombre del Titular">
+                    <input type="text" id="pTitularDni" class="form-control" placeholder="DNI del Titular">
                 </div>
                 <button type="button" class="btn btn-info w-100 mt-3 text-white" onclick="guardarPersona()">Guardar</button>
             </div>
@@ -479,9 +483,16 @@
 
     // --- PERSONAS ---
     function prepararModalPersona() {
-        document.getElementById('pId').value = ''; document.getElementById('pNombre').value = ''; document.getElementById('pEdad').value = '';
-        document.getElementById('pDni').value = ''; document.getElementById('pDom').value = ''; document.getElementById('pRol').value = 'Pasajero';
+        document.getElementById('pId').value = ''; 
+        document.getElementById('pNombre').value = ''; 
+        document.getElementById('pEdad').value = '';
+        document.getElementById('pDni').value = ''; 
+        document.getElementById('pDom').value = ''; 
+        document.getElementById('pRol').value = 'Pasajero';
+        document.getElementById('pTitularNombre').value = ''; 
+        document.getElementById('pTitularDni').value = '';
         document.getElementById('lblModalPersona').innerText = "Agregar Persona";
+        
         const combo = document.getElementById('pVinculo'); combo.innerHTML = '<option value="0">Peatón / Sin vínculo</option>';
         getActiva().vehiculos.forEach(v => combo.innerHTML += `<option value="${v.id}">Vehículo: ${v.marca}</option>`);
         getActiva().inmuebles.forEach(i => combo.innerHTML += `<option value="${i.id}">Inmueble: ${i.dir}</option>`);
@@ -490,10 +501,17 @@
 
     function editarPersona(id) {
         const p = getActiva().personas.find(x => x.id === id); if(!p) return;
-        document.getElementById('pId').value = p.id; document.getElementById('pNombre').value = p.nombre; document.getElementById('pEdad').value = p.edad;
-        document.getElementById('pDni').value = p.dni; document.getElementById('pDom').value = p.dom; document.getElementById('pRol').value = p.rol;
-        document.getElementById('pEsTitular').value = p.esTit; document.getElementById('pTitularNombre').value = p.titular;
+        document.getElementById('pId').value = p.id; 
+        document.getElementById('pNombre').value = p.nombre; 
+        document.getElementById('pEdad').value = p.edad;
+        document.getElementById('pDni').value = p.dni; 
+        document.getElementById('pDom').value = p.dom; 
+        document.getElementById('pRol').value = p.rol;
+        document.getElementById('pEsTitular').value = p.esTit; 
+        document.getElementById('pTitularNombre').value = p.titular;
+        document.getElementById('pTitularDni').value = p.titularDni || '';
         document.getElementById('lblModalPersona').innerText = "Editar Persona";
+        
         const combo = document.getElementById('pVinculo'); combo.innerHTML = '<option value="0">Peatón / Sin vínculo</option>';
         getActiva().vehiculos.forEach(v => combo.innerHTML += `<option value="${v.id}" ${p.vinc === v.id ? 'selected':''}>Vehículo: ${v.marca}</option>`);
         getActiva().inmuebles.forEach(i => combo.innerHTML += `<option value="${i.id}" ${p.vinc === i.id ? 'selected':''}>Inmueble: ${i.dir}</option>`);
@@ -508,7 +526,18 @@
 
     function guardarPersona() {
         const intv = getActiva(); const id = document.getElementById('pId').value;
-        const pData = { id: id || Date.now(), nombre: document.getElementById('pNombre').value, edad: document.getElementById('pEdad').value, dni: document.getElementById('pDni').value, dom: document.getElementById('pDom').value, vinc: document.getElementById('pVinculo').value, rol: document.getElementById('pRol').value, esTit: document.getElementById('pEsTitular').value, titular: document.getElementById('pTitularNombre').value };
+        const pData = { 
+            id: id || Date.now(), 
+            nombre: document.getElementById('pNombre').value, 
+            edad: document.getElementById('pEdad').value, 
+            dni: document.getElementById('pDni').value, 
+            dom: document.getElementById('pDom').value, 
+            vinc: document.getElementById('pVinculo').value, 
+            rol: document.getElementById('pRol').value, 
+            esTit: document.getElementById('pEsTitular').value, 
+            titular: document.getElementById('pTitularNombre').value,
+            titularDni: document.getElementById('pTitularDni').value
+        };
         if(id) { intv.personas = intv.personas.map(x => x.id == id ? pData : x); } else { intv.personas.push(pData); }
         modPersona.hide(); renderPersonas();
     }
@@ -539,13 +568,16 @@
         });
 
         intv.vehiculos.forEach(v => {
-            let e = v.tipo === 'Moto' ? '🏍️' : v.tipo === 'Camión' ? '🚛' : '🚗';
+            let e = v.tipo === 'Motocicleta' ? '🏍️' : v.tipo === 'Camión' ? '🚛' : v.tipo === 'Camioneta' ? '🛻' : '🚗';
             m += `\n${e} *${v.tipo.toUpperCase()}:* ${v.marca} | ${v.patente}\n• Seguro: ${v.seguro || 'N/S'}\n`;
             if(v.uso !== 'Particular') m += `• Uso: ${v.uso} (${v.oblea})\n`;
             v.trailers.forEach((t, x) => m += `  📦 *Acoplado ${x+1}:* ${t.patente} ${t.seguroDif ? '[Seguro Dif.]' : ''}\n`);
             intv.personas.filter(p => p.vinc === v.id).forEach(p => {
                 m += `  👤 *${p.rol}:* ${p.nombre} (${p.edad} años)\n`;
-                if(p.rol === 'Conductor' && p.esTit === 'No') m += `  ⚠️ *Titular:* ${p.titular}\n`;
+                if(p.rol === 'Conductor' && p.esTit === 'No') {
+                    let dniTitular = p.titularDni ? ` (DNI: ${p.titularDni})` : '';
+                    m += `  ⚠️ *Titular:* ${p.titular}${dniTitular}\n`;
+                }
             });
         });
 
