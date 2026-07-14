@@ -8,6 +8,7 @@
     <title>Sistema de Relevamiento - Bomberos</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --red-fire: #e03131; }
         body { background-color: var(--bs-body-bg); font-family: sans-serif; transition: background-color 0.3s ease; }
@@ -34,34 +35,37 @@
     </div>
 </nav>
 
-<!-- SISTEMA DE PESTAÑAS (TABS) -->
 <div class="container-fluid mt-2">
     <ul class="nav nav-tabs align-items-center" id="tabsIntervenciones" role="tablist">
-        <!-- Se generan dinámicamente -->
-    </ul>
+        </ul>
 </div>
 
 <div class="container my-3">
     <div class="card shadow-sm">
         <div class="card-body">
             
-            <!-- SECCIÓN VEHÍCULOS -->
-            <div class="section-title">1. Vehículos Involucrados</div>
-            <div id="listaVehiculos" class="mb-2"></div>
-            <button type="button" class="btn btn-outline-primary btn-sm w-100 mb-4" onclick="abrirModalVehiculo()">+ Agregar Vehículo</button>
+            <div id="headerSiniestro" class="alert alert-danger fw-bold text-center d-none mb-3">
+                </div>
 
-            <!-- SECCIÓN INMUEBLES -->
-            <div class="section-title">2. Inmuebles Implicados</div>
-            <div id="listaInmuebles" class="mb-2"></div>
-            <button type="button" class="btn btn-outline-success btn-sm w-100 mb-4" onclick="abrirModalInmueble()">+ Agregar Inmueble</button>
+            <div id="secVehiculos" class="d-none">
+                <div class="section-title">Vehículos Involucrados</div>
+                <div id="listaVehiculos" class="mb-2"></div>
+                <button type="button" class="btn btn-outline-primary btn-sm w-100 mb-4" onclick="abrirModalVehiculo()">+ Agregar Vehículo</button>
+            </div>
 
-            <!-- SECCIÓN PERSONAS -->
-            <div class="section-title">3. Personas Implicadas</div>
-            <div id="listaPersonas" class="mb-2"></div>
-            <button type="button" class="btn btn-outline-info btn-sm w-100 mb-4" onclick="prepararModalPersona()">+ Agregar Persona</button>
+            <div id="secInmuebles" class="d-none">
+                <div class="section-title">Inmuebles Implicados</div>
+                <div id="listaInmuebles" class="mb-2"></div>
+                <button type="button" class="btn btn-outline-success btn-sm w-100 mb-4" onclick="abrirModalInmueble()">+ Agregar Inmueble</button>
+            </div>
 
-            <!-- SECCIÓN COLABORADORES FIJOS -->
-            <div class="section-title">4. Servicios Colaboradores</div>
+            <div id="secPersonas" class="d-none">
+                <div class="section-title">Personas Implicadas</div>
+                <div id="listaPersonas" class="mb-2"></div>
+                <button type="button" class="btn btn-outline-info btn-sm w-100 mb-4" onclick="prepararModalPersona()">+ Agregar Persona</button>
+            </div>
+
+            <div class="section-title">Servicios Colaboradores</div>
             <div class="row g-2 text-center small fw-bold text-muted mb-1">
                 <div class="col-4 text-start">Institución</div>
                 <div class="col-4">Móvil</div>
@@ -69,25 +73,21 @@
             </div>
             
             <div id="contenedorColaboradores">
-                <!-- Policía -->
                 <div class="row g-2 colab-row">
                     <div class="col-4 fw-bold small text-body">Policía</div>
                     <div class="col-4"><input type="text" id="col_pol_movil" class="form-control form-control-sm text-center" oninput="sincronizarTexto()"></div>
                     <div class="col-4"><input type="text" id="col_pol_enc" class="form-control form-control-sm" oninput="sincronizarTexto()"></div>
                 </div>
-                <!-- GLP -->
                 <div class="row g-2 colab-row">
                     <div class="col-4 fw-bold small text-body">GLP Guardia Local</div>
                     <div class="col-4"><input type="text" id="col_glp_movil" class="form-control form-control-sm text-center" oninput="sincronizarTexto()"></div>
                     <div class="col-4"><input type="text" id="col_glp_enc" class="form-control form-control-sm" oninput="sincronizarTexto()"></div>
                 </div>
-                <!-- DUAR -->
                 <div class="row g-2 colab-row">
                     <div class="col-4 fw-bold small text-body">DUAR</div>
                     <div class="col-4"><input type="text" id="col_duar_movil" class="form-control form-control-sm text-center" oninput="sincronizarTexto()"></div>
                     <div class="col-4"><input type="text" id="col_duar_enc" class="form-control form-control-sm" oninput="sincronizarTexto()"></div>
                 </div>
-                <!-- Ambulancia -->
                 <div class="row g-2 colab-row mb-3">
                     <div class="col-4 fw-bold small text-body">Ambulancia</div>
                     <div class="col-4"><input type="text" id="col_amb_movil" class="form-control form-control-sm text-center" oninput="sincronizarTexto()"></div>
@@ -96,27 +96,57 @@
             </div>
             <textarea id="otrosColab" class="form-control form-control-sm mb-4" rows="1" placeholder="Otros colaboradores..." oninput="sincronizarTexto()"></textarea>
 
-            <!-- SECCIÓN MATERIAL AMBULANCIA -->
-            <div class="section-title">5. Materiales que se lleva Ambulancia</div>
+            <div class="section-title">Materiales que se lleva Ambulancia</div>
             <div class="p-3 mb-4 rounded bg-amb">
                 <textarea id="materialAmbulancia" class="form-control form-control-sm" rows="2" placeholder="Tablas, cuellos, inmovilizadores..." oninput="sincronizarTexto()"></textarea>
             </div>
 
             <div class="d-grid gap-2">
-                <button type="button" class="btn btn-success btn-lg" onclick="enviarWhatsApp()">Enviar por WhatsApp</button>
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarPestañaActiva()">Eliminar esta Pestaña</button>
+                <button type="button" class="btn btn-danger btn-lg" onclick="generarPDF()">📄 Generar Informe PDF</button>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-warning btn-sm w-100" onclick="rehacerPestañaActiva()">🔄 Rehacer Pestaña</button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-secondary btn-sm w-100" onclick="eliminarPestañaActiva()">Eliminar Pestaña</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- MODAL PRINCIPAL: MANUAL DE USO (Salta al abrir la app) -->
+<div class="modal fade" id="modalTipoIntervencion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h6 class="modal-title fw-bold" id="modalTipoIntervencionLabel">🚨 INICIAR NUEVO REPORTE</h6>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Seleccione el Tipo de Intervención:</label>
+                <select id="selTipoSiniestro" class="form-select mb-3" onchange="toggleDireccionSiniestro()">
+                    <option value="Incendio de Estructura">Incendio de Estructura</option>
+                    <option value="Incendio Vehicular">Incendio Vehicular</option>
+                    <option value="Accidente Vehicular">Accidente Vehicular</option>
+                    <option value="Asistencia de Personas">Datos / Asistencia de Personas</option>
+                </select>
+                
+                <div id="divDirSiniestro" class="d-none">
+                    <label class="form-label text-danger">Dirección del Siniestro</label>
+                    <input type="text" id="inpDirSiniestro" class="form-control mb-3" placeholder="Ej: Ruta 8 Km 600 / Calle San Martin 123">
+                </div>
+                
+                <button class="btn btn-danger w-100 fw-bold" id="btnConfirmarReporte" onclick="confirmarNuevaPestaña()">CREAR REPORTE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modalTutorial" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-dark text-white">
                 <h5 class="modal-title">📖 STEP-BY-STEP: CÓMO CARGAR LA INFORMACIÓN</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-body">
                 <div class="alert alert-warning small py-2 mb-3">
@@ -126,50 +156,15 @@
                     • <strong>En iPhone:</strong> Ícono compartir/brújula -> "Abrir en Safari".<br>
                     • <strong>Acceso Directo:</strong> Una vez en el navegador real, seleccioná "Agregar a la pantalla de inicio" para que quede como una App real en el escritorio.
                 </div>
-
-                <div class="tutorial-step">
-                    <h6>1. Gestión de Pestañas y Pantalla</h6>
-                    <p class="small mb-1"><strong>Múltiples Servicios:</strong> Al abrir la App, se iniciará el "Reporte 1". Si la guardia debe registrar otra intervención en simultáneo, tocá el botón verde "+ Nueva" arriba de todo. Se abrirá una pestaña limpia sin borrar los datos del servicio anterior. Podés alternar entre pestañas tocando sobre sus nombres.</p>
-                    <p class="small mb-0"><strong>Intervenciones Nocturnas:</strong> En la barra superior, contás con el botón "Modo Oscuro" para reducir el brillo de la pantalla y facilitar la lectura en la oscuridad.</p>
-                </div>
-
-                <div class="tutorial-step">
-                    <h6>2. Carga de Vehículos Involucrados</h6>
-                    <p class="small mb-0">Tocá el botón "+ Agregar Vehículo". Seleccioná el Tipo (Auto, Motocicleta, Camioneta, Colectivo o Camión) y el Uso (Particular, Taxi, Remis, App, Flota o Transporte). Si elegís un uso comercial o de aplicación, se desplegará un campo para anotar el número de oblea, empresa o interno. Completá Marca/Modelo, Patente y Seguro. <strong>Lógica de Camiones:</strong> Si seleccionás "Camión", aparecerá el botón "+ Agregar Acoplado" para sumar patentes y tildar si poseen seguro diferenciado. Tocá "Guardar".</p>
-                </div>
-
-                <div class="tutorial-step">
-                    <h6>3. Carga de Inmuebles Implicados</h6>
-                    <p class="small mb-0">Tocá el botón "+ Agregar Inmueble". Ingresá la Dirección y elegí el Tipo de edificación. <strong>Importante:</strong> Si seleccionás "Departamento", aparecerán los campos para ingresar el Piso y el N° de Depto. Tildá los servicios verificados en la escena (Luz, Gas Natural, Gas Envasado) y tocá "Guardar".</p>
-                </div>
-
-                <div class="tutorial-step">
-                    <h6>4. Carga y Vinculación de Personas</h6>
-                    <p class="small mb-1">Tocá el botón "+ Agregar Persona". Ingresá Nombre, Edad y DNI.</p>
-                    <p class="small mb-1"><strong>Vincular a:</strong> Este paso es fundamental. Seleccioná en el menú desplegable a qué vehículo o inmueble pertenece esa persona. Si es un peatón o testigo, dejalo en "Sin vínculo". Seleccioná el Rol (Habitante, Pasajero, Conductor o Peatón).</p>
-                    <p class="small mb-1"><strong>Lógica de Conductor:</strong> Si marcás que es Conductor, el sistema te preguntará si es el titular registral. Si seleccionás "No", se abrirá un campo abajo para escribir el nombre y el DNI del dueño del auto.</p>
-                    <p class="small mb-0">💡 <strong>¿Te equivocaste en un dato?</strong> Al lado de cada elemento en la pantalla principal verás el botón "Editar". Tocalo para reabrir el formulario, corregir la información y volver a guardar sin duplicar el registro.</p>
-                </div>
-
-                <div class="tutorial-step">
-                    <h6>5. Autoridades de Apoyo y Logística de Equipamiento</h6>
-                    <p class="small mb-1"><strong>Grilla Fija:</strong> En la sección de colaboradores ya tenés fijas las instituciones que suelen trabajar en conjunto: Policía, GLP, DUAR y Ambulancia. Solo tenés que completar el número de móvil y el efectivo/médico a cargo de cada unidad.</p>
-                    <p class="small mb-0"><strong>Inventario Sanitario:</strong> En el bloque azul "Materiales que se lleva Ambulancia", anotá de forma rápida los elementos del cuartel que quedan retenidos en el traslado de las víctimas (ej: Tabla rígida, cuello cervical, inmovilizadores), asegurando el control del material al regresar al cuartel.</p>
-                </div>
-
-                <div class="tutorial-step">
-                    <h6>6. EXPORTACIÓN DE DATOS</h6>
-                    <p class="small mb-0">Una vez finalizada la carga, presioná el botón verde grande "Enviar por WhatsApp". El programa procesará toda la información de manera inteligente y generará un mensaje de texto perfectamente estructurado con negritas y emojis técnicos. Solo restará seleccionar el grupo operativo del cuartel para enviar el reporte.</p>
-                </div>
+                <p class="small mb-1"><strong>Novedad:</strong> Ahora el sistema genera automáticamente un archivo PDF oficial. Además, al iniciar un reporte, te pedirá que elijas el tipo de intervención para mostrarte solo los datos que necesitas llenar.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger w-100 fw-bold" data-bs-dismiss="modal">CERRAR MANUAL Y COMENZAR CARGA</button>
+                <button type="button" class="btn btn-danger w-100 fw-bold" data-bs-dismiss="modal" onclick="iniciarApp()">CERRAR MANUAL Y COMENZAR</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- MODAL VEHÍCULO -->
 <div class="modal fade" id="modalVehiculo" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -213,7 +208,6 @@
     </div>
 </div>
 
-<!-- MODAL INMUEBLE -->
 <div class="modal fade" id="modalInmueble" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -231,7 +225,6 @@
                     <option value="Otro">Otro</option>
                 </select>
                 
-                <!-- Campos condicionales para Departamento -->
                 <div id="divDepto" class="row g-2 mb-2 d-none">
                     <div class="col-6"><input type="text" id="iPiso" class="form-control" placeholder="Piso (Ej: 2)"></div>
                     <div class="col-6"><input type="text" id="iDpto" class="form-control" placeholder="Depto (Ej: B)"></div>
@@ -249,7 +242,6 @@
     </div>
 </div>
 
-<!-- MODAL PERSONA -->
 <div class="modal fade" id="modalPersona" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -293,33 +285,90 @@
 <script>
     let intervenciones = [];
     let activeId = null;
+    let isRedoing = false; // Controla si estamos editando la pestaña actual o creando una nueva
 
     const modVehiculo = new bootstrap.Modal(document.getElementById('modalVehiculo'));
     const modInmueble = new bootstrap.Modal(document.getElementById('modalInmueble'));
     const modPersona = new bootstrap.Modal(document.getElementById('modalPersona'));
     const modTutorial = new bootstrap.Modal(document.getElementById('modalTutorial'));
+    const modTipoInt = new bootstrap.Modal(document.getElementById('modalTipoIntervencion'));
 
-    // Al abrir la aplicación, inicia el sistema y lanza el tutorial automáticamente
     window.onload = function() {
-        crearNuevaPestaña();
         modTutorial.show();
     };
 
-    function crearNuevaPestaña() {
-        const id = Date.now();
-        const numReporte = intervenciones.length + 1;
-        const nueva = {
-            id: id,
-            titulo: `Reporte ${numReporte}`,
-            vehiculos: [],
-            inmuebles: [],
-            personas: [],
-            colab: { pol_mov: '', pol_enc: '', glp_mov: '', glp_enc: '', duar_mov: '', duar_enc: '', amb_mov: '', amb_enc: '' },
-            otrosColab: '',
-            materialAmbulancia: ''
-        };
-        intervenciones.push(nueva);
-        cambiarPestaña(id);
+    function iniciarApp() {
+        if(intervenciones.length === 0) {
+            pedirTipoNuevaPestaña();
+        }
+    }
+
+    function pedirTipoNuevaPestaña() {
+        isRedoing = false;
+        document.getElementById('modalTipoIntervencionLabel').innerText = "🚨 INICIAR NUEVO REPORTE";
+        document.getElementById('btnConfirmarReporte').innerText = "CREAR REPORTE";
+        document.getElementById('selTipoSiniestro').value = "Incendio de Estructura";
+        document.getElementById('inpDirSiniestro').value = "";
+        toggleDireccionSiniestro();
+        modTipoInt.show();
+    }
+
+    function rehacerPestañaActiva() {
+        if(!confirm("¿Estás seguro de que querés rehacer esta pestaña? Se borrarán de forma definitiva todos los datos cargados en ella.")) return;
+        isRedoing = true;
+        document.getElementById('modalTipoIntervencionLabel').innerText = "🔄 REHACER REPORTE ACTIVO";
+        document.getElementById('btnConfirmarReporte').innerText = "RECONFIGURAR REPORTE";
+        
+        const intv = getActiva();
+        document.getElementById('selTipoSiniestro').value = intv.tipoIntervencion;
+        document.getElementById('inpDirSiniestro').value = intv.direccionSiniestro || "";
+        toggleDireccionSiniestro();
+        modTipoInt.show();
+    }
+
+    function toggleDireccionSiniestro() {
+        const tipo = document.getElementById('selTipoSiniestro').value;
+        document.getElementById('divDirSiniestro').classList.toggle('d-none', tipo !== 'Accidente Vehicular');
+    }
+
+    function confirmarNuevaPestaña() {
+        const tipo = document.getElementById('selTipoSiniestro').value;
+        const direccion = document.getElementById('inpDirSiniestro').value;
+        
+        if (isRedoing) {
+            // Rehacer pestaña activa (limpiar datos y cambiar configuración)
+            const intv = getActiva();
+            intv.tipoIntervencion = tipo;
+            intv.direccionSiniestro = direccion;
+            intv.vehiculos = [];
+            intv.inmuebles = [];
+            intv.personas = [];
+            intv.colab = { pol_mov: '', pol_enc: '', glp_mov: '', glp_enc: '', duar_mov: '', duar_enc: '', amb_mov: '', amb_enc: '' };
+            intv.otrosColab = '';
+            intv.materialAmbulancia = '';
+            
+            modTipoInt.hide();
+            cargarFormularioActivo();
+        } else {
+            // Crear una pestaña totalmente nueva
+            const id = Date.now();
+            const numReporte = intervenciones.length + 1;
+            const nueva = {
+                id: id,
+                titulo: `Reporte ${numReporte}`,
+                tipoIntervencion: tipo,
+                direccionSiniestro: direccion,
+                vehiculos: [],
+                inmuebles: [],
+                personas: [],
+                colab: { pol_mov: '', pol_enc: '', glp_mov: '', glp_enc: '', duar_mov: '', duar_enc: '', amb_mov: '', amb_enc: '' },
+                otrosColab: '',
+                materialAmbulancia: ''
+            };
+            intervenciones.push(nueva);
+            modTipoInt.hide();
+            cambiarPestaña(id);
+        }
     }
 
     function cambiarPestaña(id) {
@@ -344,13 +393,32 @@
             const activeClass = intv.id === activeId ? 'active fw-bold text-danger' : 'text-secondary';
             ul.innerHTML += `<li class="nav-item"><button class="nav-link ${activeClass}" onclick="cambiarPestaña(${intv.id})">📋 ${intv.titulo}</button></li>`;
         });
-        ul.innerHTML += `<li class="nav-item"><button class="btn btn-sm btn-success ms-2 py-1" onclick="crearNuevaPestaña()">+ Nueva</button></li>`;
+        ul.innerHTML += `<li class="nav-item"><button class="btn btn-sm btn-success ms-2 py-1" onclick="pedirTipoNuevaPestaña()">+ Nueva</button></li>`;
     }
 
     function getActiva() { return intervenciones.find(x => x.id === activeId); }
 
     function cargarFormularioActivo() {
         const intv = getActiva();
+        
+        // Ajustar visualización según tipo
+        const header = document.getElementById('headerSiniestro');
+        header.classList.remove('d-none');
+        let txtHeader = `Siniestro: ${intv.tipoIntervencion}`;
+        if(intv.tipoIntervencion === 'Accidente Vehicular' && intv.direccionSiniestro) {
+            txtHeader += `<br><small class="text-dark">Lugar: ${intv.direccionSiniestro}</small>`;
+        }
+        header.innerHTML = txtHeader;
+
+        // Mostrar u ocultar secciones según corresponda
+        document.getElementById('secInmuebles').classList.toggle('d-none', intv.tipoIntervencion !== 'Incendio de Estructura');
+        
+        const showVehiculos = (intv.tipoIntervencion === 'Incendio Vehicular' || intv.tipoIntervencion === 'Accidente Vehicular');
+        document.getElementById('secVehiculos').classList.toggle('d-none', !showVehiculos);
+        
+        document.getElementById('secPersonas').classList.remove('d-none');
+
+        // Cargar campos de colaboradores
         document.getElementById('col_pol_movil').value = intv.colab.pol_mov;
         document.getElementById('col_pol_enc').value = intv.colab.pol_enc;
         document.getElementById('col_glp_movil').value = intv.colab.glp_mov;
@@ -555,48 +623,152 @@
         document.getElementById('btnTheme').innerText = next === 'light' ? '🌙 Modo Oscuro' : '☀️ Modo Claro';
     }
 
-    // --- WHATSAPP ---
-    function enviarWhatsApp() {
+    // --- PDF GENERATION ---
+    function generarPDF() {
         const intv = getActiva();
-        let m = `*RELEVAMIENTO DE SINIESTRO (${intv.titulo})*\n----------------------------------\n`;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let y = 20;
+        const margenIzq = 15;
+
+        // Título del PDF
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text("REPORTE DE RELEVAMIENTO - BOMBEROS VOLUNTARIOS", 105, y, { align: "center" });
+        y += 10;
         
-        intv.inmuebles.forEach(i => {
-            let tipoDisplay = i.tipo;
-            if (i.tipo === 'Departamento') tipoDisplay += ` (Piso: ${i.piso || '-'} | Dpto: ${i.dpto || '-'})`;
-            m += `\n🏠 *INMUEBLE:* ${i.dir} - ${tipoDisplay}\n• Servicios: ${i.servicios}\n`;
-            intv.personas.filter(p => p.vinc === i.id).forEach(p => m += `  👤 *${p.rol}:* ${p.nombre} (${p.edad} años)\n`);
-        });
+        doc.setFontSize(12);
+        doc.text(`Tipo de Intervención: ${intv.tipoIntervencion}`, margenIzq, y);
+        y += 7;
+        
+        if (intv.tipoIntervencion === 'Accidente Vehicular' && intv.direccionSiniestro) {
+            doc.text(`Lugar del Siniestro: ${intv.direccionSiniestro}`, margenIzq, y);
+            y += 7;
+        }
+        
+        doc.setLineWidth(0.5);
+        doc.line(margenIzq, y, 195, y);
+        y += 10;
 
-        intv.vehiculos.forEach(v => {
-            let e = v.tipo === 'Motocicleta' ? '🏍️' : v.tipo === 'Camión' ? '🚛' : v.tipo === 'Camioneta' ? '🛻' : '🚗';
-            m += `\n${e} *${v.tipo.toUpperCase()}:* ${v.marca} | ${v.patente}\n• Seguro: ${v.seguro || 'N/S'}\n`;
-            if(v.uso !== 'Particular') m += `• Uso: ${v.uso} (${v.oblea})\n`;
-            v.trailers.forEach((t, x) => m += `  📦 *Acoplado ${x+1}:* ${t.patente} ${t.seguroDif ? '[Seguro Dif.]' : ''}\n`);
-            intv.personas.filter(p => p.vinc === v.id).forEach(p => {
-                m += `  👤 *${p.rol}:* ${p.nombre} (${p.edad} años)\n`;
-                if(p.rol === 'Conductor' && p.esTit === 'No') {
-                    let dniTitular = p.titularDni ? ` (DNI: ${p.titularDni})` : '';
-                    m += `  ⚠️ *Titular:* ${p.titular}${dniTitular}\n`;
-                }
-            });
-        });
-
-        const sueltos = intv.personas.filter(p => p.vinc === '0');
-        if(sueltos.length > 0) {
-            m += `\n🚶 *PEATONES / OTROS:*\n`;
-            sueltos.forEach(p => m += `• ${p.nombre} (${p.edad} años) - DNI: ${p.dni}\n`);
+        // Función auxiliar para saltos de página
+        function checkY() {
+            if (y > 270) {
+                doc.addPage();
+                y = 20;
+            }
         }
 
-        m += `\n🤝 *COLABORADORES:*\n`;
-        if(intv.colab.pol_mov || intv.colab.pol_enc) m += `• Policía: Mov ${intv.colab.pol_mov} (Enc: ${intv.colab.pol_enc})\n`;
-        if(intv.colab.glp_mov || intv.colab.glp_enc) m += `• GLP: Mov ${intv.colab.glp_mov} (Enc: ${intv.colab.glp_enc})\n`;
-        if(intv.colab.duar_mov || intv.colab.duar_enc) m += `• DUAR: Mov ${intv.colab.duar_mov} (Enc: ${intv.colab.duar_enc})\n`;
-        if(intv.colab.amb_mov || intv.colab.amb_enc) m += `• Amb: Mov ${intv.colab.amb_mov} (Enc: ${intv.colab.amb_enc})\n`;
-        if(intv.otrosColab) m += `• Otros: ${intv.otrosColab}\n`;
-        
-        if(intv.materialAmbulancia) m += `\n🚑 *MATERIAL EN AMBULANCIA:*\n${intv.materialAmbulancia}\n`;
+        doc.setFontSize(10);
 
-        window.location.href = `https://wa.me/?text=${encodeURIComponent(m)}`;
+        // INMUEBLES
+        if (intv.tipoIntervencion === 'Incendio de Estructura' && intv.inmuebles.length > 0) {
+            doc.setFont("helvetica", "bold");
+            doc.text("INMUEBLES IMPLICADOS:", margenIzq, y);
+            y += 6;
+            doc.setFont("helvetica", "normal");
+            
+            intv.inmuebles.forEach(i => {
+                checkY();
+                let tipoDisplay = i.tipo;
+                if (i.tipo === 'Departamento') tipoDisplay += ` (Piso: ${i.piso || '-'} | Dpto: ${i.dpto || '-'})`;
+                doc.text(`- Dirección: ${i.dir} | Tipo: ${tipoDisplay}`, margenIzq + 5, y); y += 5;
+                doc.text(`  Servicios verificados: ${i.servicios || 'Ninguno'}`, margenIzq + 5, y); y += 6;
+                
+                // Personas vinculadas
+                const personasVinc = intv.personas.filter(p => p.vinc === i.id);
+                if(personasVinc.length > 0){
+                    doc.setFont("helvetica", "italic");
+                    personasVinc.forEach(p => {
+                        checkY();
+                        doc.text(`  * Persona (${p.rol}): ${p.nombre} - Edad: ${p.edad} - DNI: ${p.dni}`, margenIzq + 10, y); y += 5;
+                    });
+                    doc.setFont("helvetica", "normal");
+                }
+                y+=2;
+            });
+            y += 5;
+        }
+
+        // VEHICULOS
+        if ((intv.tipoIntervencion === 'Incendio Vehicular' || intv.tipoIntervencion === 'Accidente Vehicular') && intv.vehiculos.length > 0) {
+            doc.setFont("helvetica", "bold");
+            doc.text("VEHÍCULOS INVOLUCRADOS:", margenIzq, y);
+            y += 6;
+            doc.setFont("helvetica", "normal");
+
+            intv.vehiculos.forEach(v => {
+                checkY();
+                doc.text(`- ${v.tipo.toUpperCase()} | Marca: ${v.marca} | Patente: ${v.patente}`, margenIzq + 5, y); y += 5;
+                doc.text(`  Uso: ${v.uso} ${v.oblea ? '('+v.oblea+')' : ''} | Seguro: ${v.seguro || 'N/S'}`, margenIzq + 5, y); y += 6;
+                
+                v.trailers.forEach((t, x) => {
+                    checkY();
+                    doc.text(`  [Acoplado ${x+1}]: Patente: ${t.patente} | Seguro Dif: ${t.seguroDif ? 'Si' : 'No'}`, margenIzq + 10, y); y += 5;
+                });
+
+                // Personas vinculadas
+                const personasVinc = intv.personas.filter(p => p.vinc === v.id);
+                if(personasVinc.length > 0){
+                    doc.setFont("helvetica", "italic");
+                    personasVinc.forEach(p => {
+                        checkY();
+                        doc.text(`  * Persona (${p.rol}): ${p.nombre} - Edad: ${p.edad} - DNI: ${p.dni}`, margenIzq + 10, y); y += 5;
+                        if(p.rol === 'Conductor' && p.esTit === 'No') {
+                            doc.text(`    -> Titular Registral: ${p.titular} (DNI: ${p.titularDni || 'N/S'})`, margenIzq + 15, y); y += 5;
+                        }
+                    });
+                    doc.setFont("helvetica", "normal");
+                }
+                y+=2;
+            });
+            y += 5;
+        }
+
+        // PERSONAS SIN VINCULO / PEATONES
+        const sueltos = intv.personas.filter(p => p.vinc === '0');
+        if (sueltos.length > 0) {
+            checkY();
+            doc.setFont("helvetica", "bold");
+            doc.text("OTRAS PERSONAS / PEATONES:", margenIzq, y);
+            y += 6;
+            doc.setFont("helvetica", "normal");
+            
+            sueltos.forEach(p => {
+                checkY();
+                doc.text(`- ${p.nombre} (${p.rol}) | Edad: ${p.edad} | DNI: ${p.dni} | Dom: ${p.dom}`, margenIzq + 5, y); y += 5;
+            });
+            y += 5;
+        }
+
+        // COLABORADORES
+        checkY();
+        doc.setFont("helvetica", "bold");
+        doc.text("SERVICIOS COLABORADORES:", margenIzq, y);
+        y += 6;
+        doc.setFont("helvetica", "normal");
+        
+        if(intv.colab.pol_mov || intv.colab.pol_enc) { doc.text(`- Policía: Móvil ${intv.colab.pol_mov} (A cargo: ${intv.colab.pol_enc})`, margenIzq + 5, y); y += 5; }
+        if(intv.colab.glp_mov || intv.colab.glp_enc) { doc.text(`- GLP: Móvil ${intv.colab.glp_mov} (A cargo: ${intv.colab.glp_enc})`, margenIzq + 5, y); y += 5; }
+        if(intv.colab.duar_mov || intv.colab.duar_enc) { doc.text(`- DUAR: Móvil ${intv.colab.duar_mov} (A cargo: ${intv.colab.duar_enc})`, margenIzq + 5, y); y += 5; }
+        if(intv.colab.amb_mov || intv.colab.amb_enc) { doc.text(`- Ambulancia: Móvil ${intv.colab.amb_mov} (A cargo: ${intv.colab.amb_enc})`, margenIzq + 5, y); y += 5; }
+        if(intv.otrosColab) { doc.text(`- Otros: ${intv.otrosColab}`, margenIzq + 5, y); y += 5; }
+        y += 5;
+
+        // MATERIAL DE AMBULANCIA
+        if (intv.materialAmbulancia) {
+            checkY();
+            doc.setFont("helvetica", "bold");
+            doc.text("MATERIAL QUE SE LLEVA AMBULANCIA:", margenIzq, y);
+            y += 6;
+            doc.setFont("helvetica", "normal");
+            
+            const lineasMaterial = doc.splitTextToSize(intv.materialAmbulancia, 170);
+            doc.text(lineasMaterial, margenIzq + 5, y);
+            y += (lineasMaterial.length * 5) + 5;
+        }
+
+        // Descargar PDF
+        doc.save(`Relevamiento_${intv.tipoIntervencion.replace(/ /g, '_')}_${Date.now()}.pdf`);
     }
 </script>
 </body>
