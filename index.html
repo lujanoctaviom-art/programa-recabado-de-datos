@@ -230,6 +230,21 @@
                     <div class="col-6"><input type="text" id="iDpto" class="form-control" placeholder="Depto (Ej: B)"></div>
                 </div>
 
+                <div class="row g-2 mb-2">
+                    <div class="col-12">
+                        <label class="form-label">Condición de Ocupación</label>
+                        <select id="iPropiedad" class="form-select" onchange="togglePropiedadLogic()">
+                            <option value="Propio">Propio</option>
+                            <option value="Alquilado">Alquilado</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="divDueño" class="row g-2 mb-2 d-none">
+                    <div class="col-12">
+                        <input type="text" id="iDueño" class="form-control" placeholder="Nombre del Dueño / Inmobiliaria">
+                    </div>
+                </div>
+
                 <div class="p-2 border rounded bg-light text-dark">
                     <p class="small fw-bold mb-1">Servicios:</p>
                     <div class="form-check"><input class="form-check-input i-serv" type="checkbox" value="Luz"> <label>Luz</label></div>
@@ -498,15 +513,23 @@
         document.getElementById('divDepto').classList.toggle('d-none', tipo !== 'Departamento');
     }
 
+    function togglePropiedadLogic() {
+        const prop = document.getElementById('iPropiedad').value;
+        document.getElementById('divDueño').classList.toggle('d-none', prop !== 'Alquilado');
+    }
+
     function abrirModalInmueble() {
         document.getElementById('iId').value = ''; 
         document.getElementById('iDireccion').value = ''; 
         document.getElementById('iTipo').value = 'Casa';
         document.getElementById('iPiso').value = '';
         document.getElementById('iDpto').value = '';
+        document.getElementById('iPropiedad').value = 'Propio'; 
+        document.getElementById('iDueño').value = ''; 
         document.querySelectorAll('.i-serv').forEach(c => c.checked = false); 
         document.getElementById('lblModalInmueble').innerText = "Agregar Inmueble"; 
         toggleDeptoLogic();
+        togglePropiedadLogic(); 
         modInmueble.show();
     }
 
@@ -517,9 +540,12 @@
         document.getElementById('iTipo').value = i.tipo;
         document.getElementById('iPiso').value = i.piso || '';
         document.getElementById('iDpto').value = i.dpto || '';
+        document.getElementById('iPropiedad').value = i.propiedad || 'Propio'; 
+        document.getElementById('iDueño').value = i.dueño || ''; 
         document.querySelectorAll('.i-serv').forEach(c => { c.checked = i.servicios.includes(c.value); });
         document.getElementById('lblModalInmueble').innerText = "Editar Inmueble"; 
         toggleDeptoLogic();
+        togglePropiedadLogic(); 
         modInmueble.show();
     }
 
@@ -532,6 +558,8 @@
             tipo: document.getElementById('iTipo').value, 
             piso: document.getElementById('iPiso').value,
             dpto: document.getElementById('iDpto').value,
+            propiedad: document.getElementById('iPropiedad').value, 
+            dueño: document.getElementById('iDueño').value, 
             servicios: s.join(', ') 
         };
         if(id) { intv.inmuebles = intv.inmuebles.map(x => x.id === id ? iData : x); } else { intv.inmuebles.push(iData); }
@@ -671,8 +699,11 @@
                 checkY();
                 let tipoDisplay = i.tipo;
                 if (i.tipo === 'Departamento') tipoDisplay += ` (Piso: ${i.piso || '-'} | Dpto: ${i.dpto || '-'})`;
+                
+                let propDisplay = i.propiedad === 'Alquilado' ? `Alquilado (Dueño: ${i.dueño || 'N/S'})` : 'Propio';
+
                 doc.text(`- Dirección: ${i.dir} | Tipo: ${tipoDisplay}`, margenIzq + 5, y); y += 5;
-                doc.text(`  Servicios verificados: ${i.servicios || 'Ninguno'}`, margenIzq + 5, y); y += 6;
+                doc.text(`  Condición: ${propDisplay} | Servicios verificados: ${i.servicios || 'Ninguno'}`, margenIzq + 5, y); y += 6;
                 
                 // Personas vinculadas
                 const personasVinc = intv.personas.filter(p => p.vinc === i.id);
